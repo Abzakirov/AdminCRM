@@ -28,7 +28,6 @@ export const useLoginMutation = () => {
             return response.data.data;
         },
         onSuccess: (data: UserType) => {
-            console.log(data)
             let token = data.token
             Cookie.set("user", JSON.stringify(data), { expires: 1 / 24 });
             Cookie.set("token", token, { expires: 1 / 24 });
