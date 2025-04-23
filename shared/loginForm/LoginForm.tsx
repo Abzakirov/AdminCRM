@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader } from "lucide-react";
 import { useLoginMutation } from "@/hooks/mutation";
 
 const schema = z.object({
@@ -28,10 +28,10 @@ const LoginForm = () => {
     resolver: zodResolver(schema),
   });
 
-  const { mutate } = useLoginMutation();
+  const { mutate, isPending } = useLoginMutation();
 
-  const onSubmit = (data: FormData) => {
-    mutate(data);
+  const onSubmit = async (data: FormData) => {
+    await mutate(data);
   };
 
   return (
@@ -93,11 +93,15 @@ const LoginForm = () => {
         </div>
 
         <div className="flex justify-center">
-          <button
+          <button disabled={isPending}
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full flex items-center justify-center py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
           >
-            Log In
+            {isPending ? (
+              <Loader className="animate-spin text-center text-[20px] flex items-center justify-center" />
+            ) : (
+              "Log In"
+            )}
           </button>
         </div>
       </form>

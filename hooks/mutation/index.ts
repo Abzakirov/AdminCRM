@@ -6,6 +6,7 @@ import { showErrorToast, showSuccessToast } from "@/shared/toast/Toast";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import Cookie from "js-cookie";
+import type  { UserType } from "@/@types";
 
 const schema = z.object({
     email: z.string().email(),
@@ -26,7 +27,8 @@ export const useLoginMutation = () => {
             });
             return response.data.data;
         },
-        onSuccess: (data) => {
+        onSuccess: (data: UserType) => {
+            console.log(data)
             let token = data.token
             Cookie.set("user", JSON.stringify(data), { expires: 1 / 24 });
             Cookie.set("token", token, { expires: 1 / 24 });

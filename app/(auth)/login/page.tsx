@@ -1,12 +1,12 @@
-import LoginForm from '@/shared/loginForm/LoginForm'
-import React from 'react'
+import LoginForm from "@/shared/loginForm/LoginForm";
+import React from "react";
 
 const Login = () => {
   return (
-    <div className='w-[500px] m-auto h-screen flex justify-center items-center max-[520px]:w-full'>
+    <div className="w-[500px] m-auto flex items-center justify-center h-screen">
       <LoginForm />
     </div>
-  )
-}
+  );
+}; 
 
-export default Login
+export default Login;
