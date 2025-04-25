@@ -29,3 +29,8 @@ export interface SidebarMenuType {
     path: string;
     Icons: any
 }
+export interface BrandCrumpType {
+    id: number;
+    title: string;
+    path: string;
+}

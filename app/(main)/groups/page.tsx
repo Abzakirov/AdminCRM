@@ -1,11 +1,11 @@
 import React from 'react'
 
-const Managers = () => {
+const Group = () => {
   return (
     <div>
-      managers
+      Group
     </div>
   )
 }
 
-export default Managers
+export default Group

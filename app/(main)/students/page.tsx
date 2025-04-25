@@ -1,11 +1,11 @@
 import React from 'react'
 
-const Managers = () => {
+const Students = () => {
   return (
     <div>
-      managers
+      Students
     </div>
   )
 }
 
-export default Managers
+export default Students

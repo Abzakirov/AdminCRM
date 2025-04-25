@@ -119,8 +119,10 @@
   }
 }
 
-
-
 button{
   cursor: pointer;
+}
+.dark .ant-breadcrumb-link,
+.dark .ant-breadcrumb-separator {
+  color: white !important;
 }

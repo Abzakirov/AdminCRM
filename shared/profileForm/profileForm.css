@@ -1,0 +1,37 @@
+/* Custom input styles */
+.custom-input {
+    background-color: #fff;
+    border: 1px solid #d9d9d9; /* Light gray border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 8px 12px; /* Padding for better spacing */
+    font-size: 14px;
+    color: #000; /* Text color for the value */
+    width: 100% !important;
+}
+
+.custom-input[readonly] {
+    background-color: #f2f2f2; /* Light gray background when readonly */
+    cursor: not-allowed; /* Indicate it's readonly */
+}
+
+.custom-input::placeholder {
+    color: #bfbfbf; /* Light gray placeholder color */
+}
+
+/* Dark mode styles */
+.dark .ant-form-item-label {
+    color: #fff !important; /* Make label text white in dark mode */
+}
+
+/* This will ensure that the label inside the ant-form-item-label is also white */
+
+
+/* Default label color (non-dark mode) */
+.ant-form-item-label {
+    color: #000 !important; /* Default label text color */
+}
+
+/* Ensure the form layout has enough space and structure */
+.ant-form-item {
+    margin-bottom: 16px;
+}

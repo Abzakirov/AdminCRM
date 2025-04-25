@@ -1,11 +1,11 @@
 import React from 'react'
 
-const Managers = () => {
+const Settings = () => {
   return (
     <div>
-      managers
+      Settings
     </div>
   )
 }
 
-export default Managers
+export default Settings
