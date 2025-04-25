@@ -60,16 +60,24 @@ const Sidebar = () => {
   return (
     <div className="w-[280px] h-screen p-4 border-r border-gray-200 dark:border-gray-700">
       <div className="flex justify-center items-center">
-        <img
-          className="w-[100px] h-[100px] object-contain dark:hidden "
-          src="/logoLight.png"
-          alt="Logo"
-        />
-           <img
-          className ="w-[100px] h-[100px] object-contain  hidden dark:block "
-          src="/LogoDark.png"
-          alt="Logo"
-        />
+        <div className="dark:hidden flex items-center ">
+          <h2 className="absolute left-4 font-black">ADMIN</h2>
+          <img 
+            className="w-[100px] h-[100px] object-contain relative"
+            src="/logoLight.png"
+            alt="Logo"
+          />
+          <h2 className="absolute right-[86.5%] font-bold">CRM</h2>
+        </div>
+        <div className="hidden dark:flex items-center ">
+          <h2 className="absolute left-4 font-black">ADMIN</h2>
+          <img
+            className="w-[100px] h-[100px] object-contain relative"
+            src="/LogoDark.png"
+            alt="Logo"
+          />
+          <h2 className="absolute right-[86.5%] font-bold">CRM</h2>
+        </div>
       </div>
 
       {renderMenuSection("Menu:", sidebarMenu)}
