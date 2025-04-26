@@ -18,17 +18,19 @@ export const metadata: Metadata = {
 const AdminLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en" suppressHydrationWarning>
-      <ThemeProvider
-        attribute={"class"}
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <Providers>
-          <ToastProvider />
-          <body className={`${inter.className} antialiased`}>{children}</body>
-        </Providers>
-      </ThemeProvider>
+      <body className={`${inter.className} antialiased`}>
+        <ThemeProvider
+          attribute={"class"}
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Providers>
+            <ToastProvider />
+            {children}
+          </Providers>
+        </ThemeProvider>
+      </body>
     </html>
   );
 };

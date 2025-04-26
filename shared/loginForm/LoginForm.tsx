@@ -36,7 +36,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full p-6 bg-white dark:bg-gray-900 rounded-lg shadow-md">
+    <div className="w-full p-6 rounded-lg shadow-md">
       <h1 className="text-2xl font-bold text-center mb-4 text-gray-900 dark:text-white">
         Welcome to Admin CRM
       </h1>
@@ -48,14 +48,14 @@ const LoginForm = () => {
         <div className="mb-4">
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
             Email:
           </label>
           <input
             type="email"
             {...register("email")}
-            className={`mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
+            className={`mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 dark:text-white dark:placeholder-gray-400 ${
               errors.email ? "border-red-500" : "border-gray-300 dark:border-gray-600"
             }`}
             placeholder="Enter your email"
@@ -68,14 +68,14 @@ const LoginForm = () => {
         <div className="mb-6 relative">
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
             Password:
           </label>
           <input
             type={showPassword ? "text" : "password"}
             {...register("password")}
-            className={`mt-1 block w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
+            className={`mt-1 block w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 dark:text-white dark:placeholder-gray-400 ${
               errors.password ? "border-red-500" : "border-gray-300 dark:border-gray-600"
             }`}
             placeholder="Enter your password"
@@ -97,7 +97,7 @@ const LoginForm = () => {
           <button
             disabled={isPending}
             type="submit"
-            className="w-full flex items-center justify-center py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full flex items-center justify-center py-2 px-4 text-white rounded-md dark:bg-[#fff] dark:text-black bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
           >
             {isPending ? (
               <Loader className="animate-spin text-center text-[20px]" />
