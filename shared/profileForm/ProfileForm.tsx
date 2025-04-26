@@ -1,6 +1,4 @@
 'use client';
-import { Form, Input } from "antd";
-import './profileForm.css'; 
 
 const ProfileForm = () => {
   const user = {
@@ -11,24 +9,48 @@ const ProfileForm = () => {
   };
 
   return (
-    <Form className="dark" layout="vertical" style={{ display: "flex", gap: "20px", width: "1000px" }}>
-      <div style={{ flex: 1 }}>
-      <Form.Item label="First Name :" className="dark:!text-white">
-          <Input value={user.first_name} readOnly className="custom-input" />
-        </Form.Item>
-      <Form.Item label="Email :" className="dark:!text-white">
-          <Input value={user.email} readOnly className="custom-input" />
-        </Form.Item>
+    <form className="flex gap-5 w-[1000px]  dark:shadow-[#1f1f1f] p-5 rounded">
+      <div className="flex-1 flex flex-col gap-5">
+        <div className="flex flex-col">
+          <label className="mb-1 text-black dark:text-white">First Name :</label>
+          <input 
+            type="text" 
+            value={user.first_name} 
+            readOnly 
+            className="p-2 rounded border bg-[#f7f7f7] dark:bg-gray-800 text-black dark:text-white"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label className="mb-1 text-black dark:text-white">Email :</label>
+          <input 
+            type="email" 
+            value={user.email} 
+            readOnly 
+            className="p-2 rounded border bg-[#f7f7f7] dark:bg-gray-800 text-black dark:text-white"
+          />
+        </div>
       </div>
-      <div style={{ flex: 1 }}>
-      <Form.Item label="Last Name :" className="dark:!text-white">
-          <Input value={user.last_name} readOnly className="custom-input" />
-        </Form.Item>
-      <Form.Item label="Role :" className="dark:!text-white">
-          <Input value={user.role} readOnly className="custom-input" />
-        </Form.Item>
-      </div>
-    </Form>
+      <div className="flex-1 flex flex-col gap-5">
+        <div className="flex flex-col">
+          <label className="mb-1 text-black dark:text-white">Last Name :</label>
+          <input 
+            type="text" 
+            value={user.last_name} 
+            readOnly 
+            className="p-2 rounded border bg-[#f7f7f7] dark:bg-gray-800 text-black dark:text-white"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label className="mb-1 text-black dark:text-white">Role :</label>
+          <input 
+            type="text" 
+            value={user.role} 
+            readOnly 
+            className="p-2 rounded border bg-[#f7f7f7] dark:bg-gray-800 text-black dark:text-white"
+          />
+        </div>
+      </div> 
+    </form>
   );
 };
 

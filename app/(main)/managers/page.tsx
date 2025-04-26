@@ -1,11 +1,12 @@
-import React from 'react'
+import Managerss from "@/components/manager/Managerss";
+import React from "react";
 
 const Managers = () => {
   return (
     <div>
-      managers
+      <Managerss />
     </div>
-  )
-}
+  );
+};
 
-export default Managers
+export default Managers;

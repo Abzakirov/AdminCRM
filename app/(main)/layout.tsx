@@ -29,7 +29,9 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
           <Sidebar />
           <div className="w-full">
             <Header />
-            {children}
+       <div className="w-full">
+       {children}
+       </div>
           </div>
          
         </main>
