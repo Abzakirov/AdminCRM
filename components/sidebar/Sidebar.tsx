@@ -1,4 +1,5 @@
 "use client";
+
 import { others_menu, sidebarMenu } from "@/util";
 import React, { useState } from "react";
 import { Button } from "antd";
@@ -8,7 +9,11 @@ import Cookie from "js-cookie";
 import { showSuccessToast } from "@/shared/toast/Toast";
 import LogOutModal from "@/shared/mod/LogOutModal";
 
-const Sidebar = () => {
+interface SidebarProps {
+  isOpen: boolean;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,13 +48,16 @@ const Sidebar = () => {
               type="text"
             >
               <Icons size={24} />
-              <span
-                className={`${
-                  isActive ? "font-semibold text-[19px]" : "text-[18px]"
-                }`}
-              >
-                {title}
-              </span>
+              {/* Текст скрывается, если меню закрыто */}
+              {isOpen && (
+                <span
+                  className={`${
+                    isActive ? "font-semibold text-[19px]" : "text-[18px]"
+                  }`}
+                >
+                  {title}
+                </span>
+              )}
             </Button>
           );
         })}
@@ -58,25 +66,25 @@ const Sidebar = () => {
   );
 
   return (
-    <div className="w-[280px] h-screen p-4 border-r border-gray-200 dark:border-gray-700">
+    <div
+      className={`${
+        isOpen ? "w-[280px]" : "w-[80px]"
+      } h-screen p-4 border-r border-gray-200 dark:border-gray-700 transition-all`}
+    >
       <div className="flex justify-center items-center">
         <div className="dark:hidden flex items-center ">
-          <h2 className="absolute left-4 font-black">ADMIN</h2>
-          <img 
-            className="w-[100px] h-[100px] object-contain relative"
+          <img
+            className="w-[100px] h-[100px] object-contain "
             src="/logoLight.png"
             alt="Logo"
           />
-          <h2 className="absolute right-[86.5%] font-bold">CRM</h2>
         </div>
         <div className="hidden dark:flex items-center ">
-          <h2 className="absolute left-4 font-black">ADMIN</h2>
           <img
-            className="w-[100px] h-[100px] object-contain relative"
+            className="w-[100px] h-[100px] object-contain "
             src="/LogoDark.png"
             alt="Logo"
           />
-          <h2 className="absolute right-[86.5%] font-bold">CRM</h2>
         </div>
       </div>
 
@@ -90,7 +98,7 @@ const Sidebar = () => {
           type="text"
         >
           <LogOut size={24} />
-          <span className="text-[18px]">Log out</span>
+          {isOpen && <span className="text-[18px]">Log out</span>}
         </Button>
 
         <LogOutModal

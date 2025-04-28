@@ -2,10 +2,11 @@ import React, { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
-import Sidebar from "@/components/sidebar/Sidebar";
 import "@ant-design/v5-patch-for-react-19";
-import Header from "@/components/header/Header";
 import { ThemeProvider } from "@/shared/dark-mode";
+import Providers from "@/providers";
+import AdminShell from "@/components/adminShell/AdminShell";
+import { ToastProvider } from "@/providers/ToastProvider";
 
 const inter = Inter({
   weight: ["100", "200", "300", "400", "500", "700"],
@@ -21,20 +22,17 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
         <ThemeProvider
-        attribute={"class"}
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange>
-        <main className="flex">
-          <Sidebar />
-          <div className="w-full">
-            <Header />
-       <div className="w-full">
-       {children}
-       </div>
-          </div>
-         
-        </main>
+          attribute={"class"}
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Providers>
+            <ToastProvider/>
+            <AdminShell>
+              {children}
+            </AdminShell>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

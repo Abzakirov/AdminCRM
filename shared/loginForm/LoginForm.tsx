@@ -32,7 +32,6 @@ const LoginForm = () => {
 
   const onSubmit = async (data: FormData) => {
     await mutate(data);
-    console.log(data);
   };
 
   return (

@@ -1,60 +1,66 @@
 "use client";
 
-import { Table, Tag, Avatar } from "antd";
+import { ManagerType } from "@/@types";
+import { axiosInstance } from "@/hooks/useAxios/useAxios";
+import { useQuery } from "@tanstack/react-query";
+import { Table, Tag, Avatar, Button } from "antd";
+import type { ColumnsType } from "antd/es/table";
 
-const data = [
+const columns: ColumnsType<ManagerType> = [
   {
-    key: "1",
-    _id: "6801df1e58ae8c55c00a19ee",
-    first_name: "Davron",
-    last_name: "Raimjonov",
-    email: "davron_raimjonov4446@mail.ru",
-    role: "manager",
-    status: "faol",
-    active: true,
-    createdAt: "2025-04-18T05:11:58.016Z",
-    last_active_date: "2025-04-26T07:16:43.861Z",
-    work_date: "2025-04-18T00:00:00.000Z",
-    work_end: null,
-    image: "",
-  },
-];
-
-const columns = [
-  {
-    title: "Avatar",
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+        Avatar
+      </div>
+    ),
     dataIndex: "image",
     key: "image",
-    render: (image: string) =>
-      image ? <Avatar src={image} /> : <Avatar>{"D"}</Avatar>,
+    render: (image: string, record) =>
+      image ? <Avatar src={image} /> : <Avatar>{record.first_name.charAt(0)}</Avatar>,
   },
   {
-    title: "First Name",
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+        First Name
+      </div>
+    ),
     dataIndex: "first_name",
     key: "first_name",
   },
   {
-    title: "Last Name",
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+        Last Name
+      </div>
+    ),
     dataIndex: "last_name",
     key: "last_name",
   },
   {
-    title: "Email",
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+        Email
+      </div>
+    ),
     dataIndex: "email",
     key: "email",
   },
   {
-    title: "Role",
+    title: (
+      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+        Role
+      </div>
+    ),
     dataIndex: "role",
     key: "role",
-    render: (role: string) => <Tag color="blue">{role}</Tag>,
+    render: (role: string) => <Tag color="blue" className="capitalize">{role}</Tag>,
   },
   {
     title: "Status",
     dataIndex: "status",
     key: "status",
     render: (status: string) => (
-      <Tag color={status === "active" ? "green" : "red"}>
+      <Tag color={status === "faol" ? "green" : "red"}>
         {status.toUpperCase()}
       </Tag>
     ),
@@ -67,15 +73,26 @@ const columns = [
       <Tag color={active ? "green" : "red"}>{active ? "Yes" : "No"}</Tag>
     ),
   },
-  {
-    title: "Last Active Date",
-    dataIndex: "last_active_date",
-    key: "last_active_date",
-  },
+
 ];
 
-const MyTable = () => {
-  return <Table columns={columns} dataSource={data} />;
+const ManagerTable = () => {
+  const { data, isLoading } = useQuery<ManagerType[]>({
+    queryKey: ["managers"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/staff/all-managers");
+      return res.data.data;
+    },
+  });
+
+  return (
+    <Table
+      columns={columns}
+      dataSource={data || []}
+      loading={isLoading}
+      rowKey={(record) => record._id}
+    />
+  );
 };
 
-export default MyTable;
+export default ManagerTable;
