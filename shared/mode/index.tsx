@@ -1,28 +1,36 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-import { Button } from "antd"
+import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Button } from "antd";
 
-export function ModeToggle() {
-  const { theme, setTheme } = useTheme()
+export function DarkMode() {
+  const { theme, setTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark")
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null; 
   }
+
+  const isLight = theme === "light";
+  
+  const toggleTheme = () => {
+    const newTheme = isLight ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
 
   return (
     <Button
-      type="text"
+      shape="circle"
       onClick={toggleTheme}
-      icon={
-        theme === "dark" ? (
-          <Moon className="w-5 h-5 !text-white" />
-        ) : (
-          <Sun className="w-5 h-5" />
-        )
-      }
+      icon={isLight ? <Moon size={18} color="#000" /> : <Sun size={18} color="#fff" />}
+      style={{ border: "none", background: "transparent" }}
     />
-  )
+  );
 }

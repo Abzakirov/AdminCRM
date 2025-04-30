@@ -1,7 +1,7 @@
-import ProfilesClient from "../profil/Profiles";
+import ProfilePage from "../profileHeaders/ProfileHeaders";
 
-const ProfilesServer =  () => {
-  return <ProfilesClient />;
+const ProfilesServer = () => {
+  return <ProfilePage />;
 };
 
 export default ProfilesServer;

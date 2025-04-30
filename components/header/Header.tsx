@@ -1,9 +1,9 @@
 "use client";
 
 import BrandCrams from "@/shared/brandCramp";
-import { ModeToggle } from "@/shared/mode";
 import { Bell, Megaphone, MessageCircleMore, Sidebar as SidebarIcon } from "lucide-react";
 import ProfilesServer from "../profileServer/ProfileServer";
+import { DarkMode } from "@/shared/mode";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
           <Bell size={23} className="cursor-pointer" />
           <MessageCircleMore size={23} className="cursor-pointer" />
           <Megaphone size={23} className="cursor-pointer" />
-          <ModeToggle />
+          <DarkMode />
         </div>
         <ProfilesServer />
       </div>

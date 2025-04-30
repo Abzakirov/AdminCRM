@@ -1,7 +1,9 @@
 'use client'
+
 import AddAdminDrawer from "@/shared/addAdminDrawer/AddAdminDrawer";
-import { Input, Button } from "antd";
+import { Input } from "antd";
 import { useState } from "react";
+import OpenDrawerButton from "../openDrawerButton/OpenDrawerButton";
 
 const AdminHeader: React.FC = () => {
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
@@ -21,7 +23,7 @@ const AdminHeader: React.FC = () => {
       </div>
       <div className="flex items-center gap-3">
         <Input type="text" placeholder="Search Administrative authorities" className="!w-[270px]" />
-        <Button type="primary" onClick={showDrawer}>Create admin</Button>
+        <OpenDrawerButton showDrawer={showDrawer} />
         <AddAdminDrawer visible={drawerVisible} onClose={closeDrawer} />
       </div>
     </div>

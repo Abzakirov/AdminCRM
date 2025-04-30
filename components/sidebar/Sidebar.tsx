@@ -21,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const handleLogout = () => {
     Cookie.remove("token");
     Cookie.remove("user");
-    showSuccessToast("Вы успешно вышли!");
+    showSuccessToast("Logout successful!");
     router.push("/login");
   };
 
@@ -48,7 +48,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               type="text"
             >
               <Icons size={24} />
-              {/* Текст скрывается, если меню закрыто */}
               {isOpen && (
                 <span
                   className={`${

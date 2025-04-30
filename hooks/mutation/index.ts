@@ -6,10 +6,12 @@ import { showErrorToast, showSuccessToast } from "@/shared/toast/Toast";
 import { useRouter } from "next/navigation";
 import Cookie from "js-cookie";
 import { z } from "zod";
-import type { AdminType, AdminUserType, EditAdminType, UserType } from "@/@types";
-import { EditProfileType } from "@/shared/editProfileDrawer/EditProfileDrawer";
+import type { AdminType, AdminUserType, EditAdminType, EditProfileImageType, UserType } from "@/@types";
 
-// Login schema
+
+interface UploadImageData {
+  image: File;
+}
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
@@ -17,7 +19,6 @@ const loginSchema = z.object({
 
 type FormData = z.infer<typeof loginSchema>;
 
-// --- LOGIN MUTATION ---
 export const useLoginMutation = () => {
   const router = useRouter();
 
@@ -41,7 +42,6 @@ export const useLoginMutation = () => {
   });
 };
 
-// --- GENERIC CACHE EDIT ---
 export const useEditMutationCache = <T extends { _id: string }>(queryKey: string[]) => {
   const queryClient = useQueryClient();
   return (data: T) => {
@@ -121,7 +121,7 @@ export const useEditProfileMutation = () => {
 
   return useMutation({
     mutationKey: ["edit-profile"],
-    mutationFn: async (data: EditProfileType) => {
+    mutationFn: async (data: EditProfileImageType) => {
       const response = await axiosInstance.post("/auth/edit-profile", data);
       return response.data.data;
     },
@@ -135,4 +135,52 @@ export const useEditProfileMutation = () => {
       showErrorToast(error?.response?.data?.message || "Failed to create admin!");
     },
   })
+
+  
 }
+
+
+export const useEditProfileMutationCache = () => {
+  const queryclient = useQueryClient();
+  return (data: EditProfileImageType) => {
+    return queryclient.setQueryData(
+      ["profiledata"],
+      (old: EditProfileImageType | undefined) => {
+        return { ...old, ...data };
+      }
+    );
+  };
+};
+
+export const useEditProfileImgMutation = () => {
+  const mutationCache = useEditProfileMutationCache();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["edit-profile-img"],
+    mutationFn: async (data: { profileData: EditProfileImageType; image: File }) => {
+      await mutationCache(data.profileData);
+
+      const formData = new FormData();
+      formData.append("image", data.image);
+
+      const res = await axiosInstance.post("/auth/edit-profile-img", formData);
+      const updatedImage = res.data.data.image;
+
+      const updatedUser = {
+        ...data.profileData,
+        image: updatedImage,
+      };
+
+      Cookie.set("user", JSON.stringify(updatedUser));
+      return updatedUser;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profiledata"] });
+      showSuccessToast("Profile image updated successfully!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "Failed to upload profile image");
+    },
+  });
+};

@@ -1,20 +1,11 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
 import { UserType } from "@/@types";
-import Cookies from "js-cookie";
 
-const ProfilesClient = () => {
-  const [user, setUser] = useState<UserType | null>(null);
+interface ProfilesClientProps {
+  user: UserType | null;  
+}
 
-  useEffect(() => {
-    const cookieUser = Cookies.get("user");
-    if (cookieUser) {
-      setUser(JSON.parse(cookieUser));
-    }
-  }, []);
-
-  if (!user) return null;
+const ProfilesClient: React.FC<ProfilesClientProps> = ({ user }) => {
+  if (!user) return null; 
 
   return (
     <div className="flex items-center gap-2">

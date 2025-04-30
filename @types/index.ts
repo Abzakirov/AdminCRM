@@ -1,4 +1,3 @@
-import { ForwardRefExoticComponent } from "react";
 
 
 export interface ChildrenType {
@@ -93,22 +92,6 @@ export interface AdminType {
     work_end: string | null;
 }
 
-export interface AdminType {
-    _id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    role: string;
-    status: string;
-    active: boolean;
-    image: string;
-    createdAt: string;
-    updatedAt: string;
-    is_deleted: boolean;
-    leave_history: any[];
-    work_date: string;
-    work_end: string | null;
-}
 
 export type AdminUserType = {
     _id: string;
@@ -133,4 +116,14 @@ export interface EditAdminType {
     last_name: string;
     email: string;
     status: string;
+}
+
+
+export interface EditProfileImageType {
+    first_name: string;
+    last_name: string;
+    email: string;
+    role: string;
+    image?: File;
+      
 }

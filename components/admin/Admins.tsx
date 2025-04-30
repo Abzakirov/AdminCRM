@@ -1,8 +1,12 @@
 import { axiosInstance } from "@/hooks/useAxios/useAxios";
-import AdminTable from "@/shared/table/AdminTable";
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import React from "react";
 import AdminHeader from "../adminHeader/AdminHeader";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import React from "react";
+import AdminTableClient from "../tables";
 
 const getAdmins = async () => {
   const res = await axiosInstance.get("/staff/all-admins");
@@ -13,7 +17,7 @@ const AdminComponent = async () => {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ["admins"], 
+    queryKey: ["admins"],
     queryFn: getAdmins,
   });
 
@@ -22,8 +26,8 @@ const AdminComponent = async () => {
   return (
     <div className="mt-3">
       <HydrationBoundary state={dehydratedState}>
-        <AdminHeader/>
-        <AdminTable />
+        <AdminHeader />
+        <AdminTableClient />
       </HydrationBoundary>
     </div>
   );
