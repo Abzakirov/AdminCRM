@@ -1,11 +1,12 @@
-import React from 'react'
+import TeachersComponent from "@/components/teacher/TeachersComponent";
+import React from "react";
 
 const Teachers = () => {
   return (
     <div>
-      Teachers
+      <TeachersComponent />
     </div>
-  )
-}
+  );
+};
 
-export default Teachers
+export default Teachers;

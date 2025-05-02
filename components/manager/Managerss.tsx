@@ -1,7 +1,7 @@
 import { axiosInstance } from "@/hooks/useAxios/useAxios";
-import ManagerTable from "@/shared/table";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import React from "react";
+import ManagerClient from "./managerclient";
 
 const getManagers = async () => {
   const res = await axiosInstance.get("/staff/all-managers");
@@ -21,7 +21,7 @@ const Managerss = async () => {
   return (
     <div>
       <HydrationBoundary state={dehydratedState}>
-        <ManagerTable />
+        <ManagerClient />
       </HydrationBoundary>
     </div>
   );

@@ -3,14 +3,16 @@
 import { useState, useEffect } from "react";
 import { Button } from "antd";
 import EditProfileDrawer from "@/shared/editProfileDrawer/EditProfileDrawer";
-import { UserType } from "@/@types";
 import ProfileForm from "@/shared/profileForm/ProfileForm";
 import Cookies from "js-cookie";
 import { Camera } from "lucide-react";
 import { useEditProfileImgMutation } from "@/hooks/mutation";
+import { UserType } from "@/@types";
+import EditPassword from "@/shared/mod/EditPassword";
 
 const MainProfile = ({ user }: { user: UserType }) => {
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [passwordModalVisible, setPasswordModalVisible] = useState(false); 
   const [currentUser, setCurrentUser] = useState<UserType>(user);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(
@@ -60,6 +62,9 @@ const MainProfile = ({ user }: { user: UserType }) => {
   const showDrawer = () => setDrawerVisible(true);
   const onCloseDrawer = () => setDrawerVisible(false);
 
+  const showPasswordModal = () => setPasswordModalVisible(true);
+  const closePasswordModal = () => setPasswordModalVisible(false);
+
   const handleSaveUser = (updatedUser: UserType) => {
     setCurrentUser(updatedUser);
     setImagePreview(updatedUser.image || imagePreview);
@@ -67,16 +72,18 @@ const MainProfile = ({ user }: { user: UserType }) => {
   };
 
   return (
-    <div className="flex w-full justify-center p-6 bg-[#f9f9f9] dark:bg-black min-h-screen dark:shadow-[#1f1f1f]">
-      <div className="w-full bg-white dark:bg-black rounded-lg shadow-xl p-8 flex flex-col gap-6 border border-gray-100 dark:border-gray-800" 
-           style={{ 
-             boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)", 
-             transition: "all 0.3s ease-in-out" 
-           }}>
+    <div className="flex w-full justify-center p-6 bg-[#f9f9f9] dark:bg-gray-900 min-h-screen dark:shadow-[#1f1f1f]">
+      <div
+        className="w-full bg-white dark:bg-gray-900 rounded-lg shadow-2xl p-8 flex flex-col gap-6 border border-gray-100 dark:border-none"
+        style={{
+          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
+          transition: "all 0.3s ease-in-out",
+        }}
+      >
         <img
           src="/profile_img.svg"
           alt={currentUser.first_name}
-          className="w-full rounded-t-lg "
+          className="w-full rounded-t-lg"
         />
 
         <div className="flex items-center justify-between ml-2">
@@ -94,7 +101,7 @@ const MainProfile = ({ user }: { user: UserType }) => {
                 )}
               </div>
               <label className="absolute bottom-0 right-0 cursor-pointer bg-white rounded-full p-[2px] shadow-lg">
-                <Camera size={18} className="dark:text-black"/>
+                <Camera size={18} className="dark:text-black" />
                 <input
                   type="file"
                   accept="image/*"
@@ -107,15 +114,32 @@ const MainProfile = ({ user }: { user: UserType }) => {
 
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-2">
-                <h2 className="text-[18px] font-medium">{currentUser.first_name}</h2>
-                <h2 className="text-[18px] font-medium">{currentUser.last_name}</h2>
+                <h2 className="text-[18px] font-medium">
+                  {currentUser.first_name}
+                </h2>
+                <h2 className="text-[18px] font-medium">
+                  {currentUser.last_name}
+                </h2>
               </div>
               <p className="text-[15px] opacity-[0.5]">{currentUser.email}</p>
             </div>
           </div>
-          <Button type="primary" onClick={showDrawer} className="shadow-md hover:shadow-lg">
-            Edit Profile
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              type="primary"
+              onClick={showDrawer}
+              className="shadow-md hover:shadow-lg"
+            >
+              Edit Profile
+            </Button>
+            <Button
+              type="primary"
+              onClick={showPasswordModal}
+              className="shadow-md hover:shadow-lg"
+            >
+              Edit Password
+            </Button>
+          </div>
         </div>
 
         {selectedImage && (
@@ -129,11 +153,11 @@ const MainProfile = ({ user }: { user: UserType }) => {
           </Button>
         )}
 
-        <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg shadow-inner">
+        <div >
           <ProfileForm user={currentUser} />
         </div>
 
-        <div className="flex flex-col gap-3 bg-gray-50 dark:bg-gray-900 p-4 rounded-lg shadow-md">
+        <div className="p-4">
           <h2 className="text-[18px] font-medium">My email Address:</h2>
           <p className="text-[17px] opacity-[0.5]">{currentUser.email}</p>
         </div>
@@ -144,6 +168,12 @@ const MainProfile = ({ user }: { user: UserType }) => {
         onClose={onCloseDrawer}
         user={currentUser}
         onSave={handleSaveUser}
+      />
+
+      <EditPassword
+        visible={passwordModalVisible}
+        onClose={closePasswordModal}
+        user={currentUser}
       />
     </div>
   );

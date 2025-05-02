@@ -1,7 +1,7 @@
 "use client";
 
 import { others_menu, sidebarMenu } from "@/util";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "antd";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
@@ -17,6 +17,32 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string>("");
+
+  const [filteredSidebarMenu, setFilteredSidebarMenu] = useState(sidebarMenu);
+  const [filteredOthersMenu, setFilteredOthersMenu] = useState(others_menu);
+
+  useEffect(() => {
+    const userCookie = Cookie.get("user");
+    if (userCookie) {
+      try {
+        const user = JSON.parse(userCookie);
+        setUserRole(user.role || "");
+      } catch (error) {
+        console.error("Error parsing user cookie:", error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!userRole) return;
+
+    const filterByRole = (menu: typeof sidebarMenu) =>
+      menu.filter((item) => item.roles?.includes(userRole));
+
+    setFilteredSidebarMenu(filterByRole(sidebarMenu));
+    setFilteredOthersMenu(filterByRole(others_menu));
+  }, [userRole]);
 
   const handleLogout = () => {
     Cookie.remove("token");
@@ -68,27 +94,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     <div
       className={`${
         isOpen ? "w-[280px]" : "w-[80px]"
-      } h-screen p-4 border-r border-gray-200 dark:border-gray-700 transition-all`}
+      } h-screen p-4 border-r border-gray-200 dark:border-gray-700 transition-all
+    sticky top-0 bg-white dark:bg-[#1f1f1f] z-30`}
     >
       <div className="flex justify-center items-center">
-        <div className="dark:hidden flex items-center ">
+        <div className="dark:hidden flex items-center">
           <img
-            className="w-[100px] h-[100px] object-contain "
+            className="w-[100px] h-[100px] object-contain"
             src="/logoLight.png"
             alt="Logo"
           />
         </div>
-        <div className="hidden dark:flex items-center ">
+        <div className="hidden dark:flex items-center">
           <img
-            className="w-[100px] h-[100px] object-contain "
+            className="w-[100px] h-[100px] object-contain"
             src="/LogoDark.png"
             alt="Logo"
           />
         </div>
       </div>
 
-      {renderMenuSection("Menu:", sidebarMenu)}
-      {renderMenuSection("Others:", others_menu)}
+      {renderMenuSection("Menu:", filteredSidebarMenu)}
+      {renderMenuSection("Others:", filteredOthersMenu)}
 
       <div className="mt-4">
         <Button

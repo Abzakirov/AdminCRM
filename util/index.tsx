@@ -16,53 +16,60 @@ export const sidebarMenu: SidebarMenuType[] = [
     title: "Asosiy",
     path: "/",
     Icons: LayoutGrid,
+    roles: ["admin", "manager", "teacher", "student"], 
   },
   {
     id: 2,
-    title: "Menegers",
+    title: "Manajerlar",
     path: "/managers",
     Icons: ShieldUser,
+    roles: ["manager"],
   },
   {
     id: 3,
-    title: "Admins",
+    title: "Adminlar",
     path: "/admins",
     Icons: ContactRound,
+    roles: ["admin", "manager"], 
   },
   {
     id: 4,
-    title: "Teachers",
+    title: "O'qituvchilar",
     path: "/teachers",
     Icons: UserRoundPen,
+    roles: ["admin", "manager"],
   },
   {
     id: 5,
-    title: "Students",
+    title: "O'quvchilar",
     path: "/students",
     Icons: Users,
+    roles: ["admin", "manager", "teacher"],
   },
   {
     id: 6,
     title: "Groups",
     path: "/groups",
     Icons: Component,
+    roles: ["admin", "manager", "teacher"],
   },
 ];
 
 export const others_menu: SidebarMenuType[] = [
   {
     id: 1,
-    title: "Settings",
+    title: "Sozlamalar",
     path: "/settings",
     Icons: Settings,
+    roles: ["admin", "manager", "teacher", "student"], 
   },
   {
     id: 2,
-    title: "Profile",
+    title: "Profil",
     path: "/profile",
     Icons: CircleUserRound,
+    roles: ["admin", "manager", "teacher", "student"], 
   },
- 
 ];
 
 

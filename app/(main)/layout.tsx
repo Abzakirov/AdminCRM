@@ -20,8 +20,8 @@ export const metadata: Metadata = {
 const AdminLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
-        <ThemeProvider
+      <body className={`${inter.className} antialiased bg-white dark:!bg-[#1f1f1f]`}>
+        <ThemeProvider  
           attribute={"class"}
           defaultTheme="system"
           enableSystem

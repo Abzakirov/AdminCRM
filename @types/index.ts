@@ -1,3 +1,4 @@
+import { LucideIcon } from "lucide-react";
 
 
 export interface ChildrenType {
@@ -41,18 +42,37 @@ export type UserEditType = {
     user: UserType
 };
 
-
-
 export interface SidebarMenuType {
     id: number;
     title: string;
     path: string;
-    Icons: any
-}
+    Icons: LucideIcon;
+    roles?: string[];
+  }
+  
+  
 export interface BrandCrumpType {
     id: number;
     title: string;
     path: string;
+}
+
+export interface TeacherType {
+    _id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    field: string;
+    image: string | null;
+    status: string;
+    salary: number;
+    work_date: string;
+    work_end: string | null;
+    is_deleted: boolean;
+    createdAt: string;
+    updatedAt: string;
+    groups: string[];
 }
 
 
@@ -123,7 +143,38 @@ export interface EditProfileImageType {
     first_name: string;
     last_name: string;
     email: string;
-    role: string;
     image?: File;
-      
+
+}
+
+export interface EditPasswordType {
+    user_id: string;
+    current_password: string;
+    new_password: string;
+}
+
+
+export interface VacationType {
+    _id: string;
+    start_date: string;
+    end_date: string;
+    reason: string;
+}
+
+export interface TeacherType {
+    _id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    field: string;
+    image: string | null;
+    status: string;
+    salary: number;
+    work_date: string;
+    work_end: string | null;
+    is_deleted: boolean;
+    createdAt: string;
+    updatedAt: string;
+    groups: string[];
 }

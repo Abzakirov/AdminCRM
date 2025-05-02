@@ -8,8 +8,13 @@ import type { ColumnsType } from "antd/es/table";
 import { MoreOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import RightSidebar from "../right_sidebar/RightSidebar";
-import { useDeleteAdminMutation } from "@/hooks/mutation";
+import {
+  useDeleteAdminMutation,
+  useReturnVacationMutation,
+  useReturnWorkMutation,
+} from "@/hooks/mutation";
 import Cookies from "js-cookie";
+import VacationModal from "../mod/VacationModal";
 
 const AdminTableLight = () => {
   const { data, isLoading, refetch } = useQuery<AdminType[]>({
@@ -23,35 +28,66 @@ const AdminTableLight = () => {
   const [admins, setAdmins] = useState<AdminType[]>([]);
   const [selectedUser, setSelectedUser] = useState<AdminUserType | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isReturnVacationModalOpen, setIsReturnVacationModalOpen] =
+    useState(false);
   const [adminToDelete, setAdminToDelete] = useState<AdminUserType | null>(
     null
   );
+  const [adminToReturnVacation, setAdminToReturnVacation] =
+    useState<AdminUserType | null>(null);
+  const [vacationAdminId, setVacationAdminId] = useState<string | null>(null);
+  const [isReturnWorkModalOpen, setIsReturnWorkModalOpen] = useState(false);
+  const [adminToReturnWork, setAdminToReturnWork] =
+    useState<AdminUserType | null>(null);
+
   const [userRole, setUserRole] = useState<string | null>(null);
 
   const { mutate: deleteAdmin, isPending: isDeleting } =
     useDeleteAdminMutation();
+  const { mutate: returnVacation, isPending: isReturningVacation } =
+    useReturnVacationMutation();
+  const { mutate: returnWork } = useReturnWorkMutation();
 
   useEffect(() => {
-    if (data) {
-      setAdmins(data);
-    }
+    if (data) setAdmins(data);
+
     const user = Cookies.get("user");
     if (user) {
       try {
         const parsed = JSON.parse(user);
         setUserRole(parsed.role);
       } catch (error) {
-        console.error("Failed to parse user cookie:", error);
+        console.error(
+          "Foydalanuvchi cookie'sini tahlil qilishda xatolik:",
+          error
+        );
       }
     }
   }, [data]);
 
   const handleMenuClick = (record: AdminUserType, action: string) => {
-    if (action === "edit") {
-      setSelectedUser(record);
-    } else if (action === "delete") {
-      setAdminToDelete(record);
-      setIsDeleteModalOpen(true);
+    switch (action) {
+      case "edit":
+        setSelectedUser(record);
+        break;
+      case "delete":
+        setAdminToDelete(record);
+        setIsDeleteModalOpen(true);
+        break;
+      case "vacation":
+        setVacationAdminId(record._id);
+        break;
+      case "return-vacation":
+        setAdminToReturnVacation(record);
+        setIsReturnVacationModalOpen(true);
+        break;
+      case "return-work-staff":
+        setAdminToReturnWork(record);
+        setIsReturnWorkModalOpen(true);
+        break;
+
+      default:
+        break;
     }
   };
 
@@ -71,13 +107,46 @@ const AdminTableLight = () => {
     setIsDeleteModalOpen(false);
     setAdminToDelete(null);
   };
+  const handleReturnWorkConfirm = () => {
+    if (!adminToReturnWork) return;
+
+    returnWork(adminToReturnWork._id, {
+      onSuccess: () => {
+        setIsReturnWorkModalOpen(false);
+        setAdminToReturnWork(null);
+        refetch();
+      },
+    });
+  };
+
+  const handleReturnWorkCancel = () => {
+    setIsReturnWorkModalOpen(false);
+    setAdminToReturnWork(null);
+  };
+
+  const handleReturnVacationConfirm = () => {
+    if (!adminToReturnVacation) return;
+
+    returnVacation(adminToReturnVacation._id, {
+      onSuccess: () => {
+        setIsReturnVacationModalOpen(false);
+        setAdminToReturnVacation(null);
+        refetch();
+      },
+    });
+  };
+
+  const handleReturnVacationCancel = () => {
+    setIsReturnVacationModalOpen(false);
+    setAdminToReturnVacation(null);
+  };
 
   const columns: ColumnsType<AdminType> = [
     {
       title: "Avatar",
       dataIndex: "image",
       key: "image",
-      render: (image: string, record: AdminType) =>
+      render: (image: string, record) =>
         image ? (
           <Avatar src={image} />
         ) : (
@@ -85,12 +154,12 @@ const AdminTableLight = () => {
         ),
     },
     {
-      title: "First Name",
+      title: "Ism",
       dataIndex: "first_name",
       key: "first_name",
     },
     {
-      title: "Last Name",
+      title: "Familiya",
       dataIndex: "last_name",
       key: "last_name",
     },
@@ -128,31 +197,26 @@ const AdminTableLight = () => {
       ),
     },
     {
-      title: "Is Active?",
+      title: "Is active?",
       dataIndex: "active",
       key: "active",
       render: (active: boolean) => (
-        <Tag color={active ? "green" : "red"}>{active ? "True" : "False"}</Tag>
+        <Tag color={active ? "green" : "red"}>{active ? "Ha" : "Yo'q"}</Tag>
       ),
     },
     ...(userRole === "manager"
       ? [
           {
-            title: "Actions",
+            title: "Amallar",
             key: "actions",
             render: (_: any, record: AdminType) => {
               const items = [
-                {
-                  label: "Edit",
-                  key: "edit",
-                },
-                {
-                  label: "Delete",
-                  key: "delete",
-                  danger: true,
-                },
+                { label: "Tahrirlash", key: "edit" },
+                { label: "O'chirish", key: "delete", danger: true },
+                { label: "Ta'tilga chiqarish", key: "vacation" },
+                { label: "Ta'tildan qaytarish", key: "return-vacation" },
+                { label: "Ishga qaytarish", key: "return-work-staff" },
               ];
-
               return (
                 <Dropdown
                   menu={{
@@ -185,21 +249,69 @@ const AdminTableLight = () => {
       <RightSidebar user={selectedUser} onClose={() => setSelectedUser(null)} />
 
       <Modal
-        title="Confirm Deletion"
+        title="O'chirishni tasdiqlang"
         open={isDeleteModalOpen}
         onOk={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
-        okText="Yes"
-        cancelText="No"
+        okText="Ha"
+        cancelText="Yo'q"
         okButtonProps={{ danger: true, loading: isDeleting }}
       >
         {adminToDelete && (
           <p>
-            Are you sure you want to delete {adminToDelete.first_name}{" "}
-            {adminToDelete.last_name}?
+            Siz rostdan ham
+            <strong>
+              {adminToDelete.first_name} {adminToDelete.last_name || ""}
+            </strong>{" "}
+            ni o'chirishni xohlaysizmi?
           </p>
         )}
       </Modal>
+
+      <Modal
+        title="Ta'tildan qaytarishni tasdiqlang"
+        open={isReturnVacationModalOpen}
+        onOk={handleReturnVacationConfirm}
+        onCancel={handleReturnVacationCancel}
+        okText="Ha"
+        cancelText="Yo'q"
+        okButtonProps={{ loading: isReturningVacation }}
+      >
+        {adminToReturnVacation && (
+          <p>
+            Siz rostdan ham{" "}
+            <strong>
+              {adminToReturnVacation.first_name}{" "}
+              {adminToReturnVacation.last_name || ""}
+            </strong>
+            ni ta'tildan qaytarishni xohlaysizmi?
+          </p>
+        )}
+      </Modal>
+      <Modal
+        title="Ishga qaytarishni tasdiqlang"
+        open={isReturnWorkModalOpen}
+        onOk={handleReturnWorkConfirm}
+        onCancel={handleReturnWorkCancel}
+        okText="Ha"
+        cancelText="Yo'q"
+      >
+        {adminToReturnWork && (
+          <p className="flex items-center gap-2">
+            Siz rostdan ham{" "}
+            <strong>
+              {adminToReturnWork.first_name} {adminToReturnWork.last_name || ""}
+            </strong>
+          <p>  ni ishga qaytishini xohlaysizmi?</p>
+          </p>
+        )}
+      </Modal>
+
+      <VacationModal
+        open={!!vacationAdminId}
+        onClose={() => setVacationAdminId(null)}
+        adminId={vacationAdminId}
+      />
     </>
   );
 };

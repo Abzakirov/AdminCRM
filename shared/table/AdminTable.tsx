@@ -1,16 +1,29 @@
-'use client';
+"use client";
 
 import { AdminType, AdminUserType } from "@/@types";
 import { axiosInstance } from "@/hooks/useAxios/useAxios";
 import { useQuery } from "@tanstack/react-query";
-import { Table, Avatar, Button, Dropdown, Modal, ConfigProvider, theme } from "antd";
+import {
+  Table,
+  Avatar,
+  Button,
+  Dropdown,
+  Modal,
+  ConfigProvider,
+  theme,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { MoreOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import RightSidebar from "../right_sidebar/RightSidebar";
-import { useDeleteAdminMutation } from "@/hooks/mutation";
+import {
+  useDeleteAdminMutation,
+  useReturnVacationMutation,
+  useReturnWorkMutation,
+} from "@/hooks/mutation";
 import Cookies from "js-cookie";
 import "./AdminTable.css";
+import VacationModal from "../mod/VacationModal";
 
 const AdminTable = () => {
   const { data, isLoading, refetch } = useQuery<AdminType[]>({
@@ -24,10 +37,24 @@ const AdminTable = () => {
   const [admins, setAdmins] = useState<AdminType[]>([]);
   const [selectedUser, setSelectedUser] = useState<AdminUserType | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [adminToDelete, setAdminToDelete] = useState<AdminUserType | null>(null);
+  const [adminToDelete, setAdminToDelete] = useState<AdminUserType | null>(
+    null
+  );
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [adminToReturnVacation, setAdminToReturnVacation] =
+    useState<AdminUserType | null>(null);
+  const [isReturnVacationModalOpen, setIsReturnVacationModalOpen] =
+    useState(false);
+  const [vacationAdminId, setVacationAdminId] = useState<string | null>(null);
+  const [adminToReturnWork, setAdminToReturnWork] =
+    useState<AdminUserType | null>(null);
+  const [isReturnWorkModalOpen, setIsReturnWorkModalOpen] = useState(false);
 
-  const { mutate: deleteAdmin, isPending: isDeleting } = useDeleteAdminMutation();
+  const { mutate: returnWork } = useReturnWorkMutation();
+  const { mutate: deleteAdmin, isPending: isDeleting } =
+    useDeleteAdminMutation();
+  const { mutate: returnVacation, isPending: isReturningVacation } =
+    useReturnVacationMutation();
 
   useEffect(() => {
     if (data) {
@@ -39,17 +66,34 @@ const AdminTable = () => {
         const parsed = JSON.parse(user);
         setUserRole(parsed.role);
       } catch (error) {
-        console.error("Failed to parse user cookie:", error);
+        console.error("Error parsing user cookie:", error);
       }
     }
   }, [data]);
 
-  const handleMenuClick = (record: AdminType, action: string) => {
-    if (action === "edit") {
-      setSelectedUser(record as unknown as AdminUserType);
-    } else if (action === "delete") {
-      setAdminToDelete(record as unknown as AdminUserType);
-      setIsDeleteModalOpen(true);
+  const handleMenuClick = (record: AdminUserType, action: string) => {
+    switch (action) {
+      case "edit":
+        setSelectedUser(record);
+        break;
+      case "delete":
+        setAdminToDelete(record);
+        setIsDeleteModalOpen(true);
+        break;
+      case "vacation":
+        setVacationAdminId(record._id);
+        break;
+      case "return-vacation":
+        setAdminToReturnVacation(record);
+        setIsReturnVacationModalOpen(true);
+        break;
+      case "return-work-staff":
+        setAdminToReturnWork(record);
+        setIsReturnWorkModalOpen(true);
+        break;
+
+      default:
+        break;
     }
   };
 
@@ -65,36 +109,69 @@ const AdminTable = () => {
     });
   };
 
+  const handleReturnVacationConfirm = () => {
+    if (!adminToReturnVacation) return;
+
+    returnVacation(adminToReturnVacation._id, {
+      onSuccess: () => {
+        setIsReturnVacationModalOpen(false);
+        setAdminToReturnVacation(null);
+        refetch();
+      },
+    });
+  };
+
   const handleDeleteCancel = () => {
     setIsDeleteModalOpen(false);
     setAdminToDelete(null);
   };
 
+  const handleReturnVacationCancel = () => {
+    setIsReturnVacationModalOpen(false);
+    setAdminToReturnVacation(null);
+  };
+  const handleReturnWorkConfirm = () => {
+    if (!adminToReturnWork) return;
+
+    returnWork(adminToReturnWork._id, {
+      onSuccess: () => {
+        setIsReturnWorkModalOpen(false);
+        setAdminToReturnWork(null);
+        refetch();
+      },
+    });
+  };
+
+  const handleReturnWorkCancel = () => {
+    setIsReturnWorkModalOpen(false);
+    setAdminToReturnWork(null);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'faol':
-        return { color: '#52c41a', bg: 'rgba(82, 196, 26, 0.2)' };
+      case "faol":
+        return { color: "#52c41a", bg: "rgba(82, 196, 26, 0.2)" };
       case "ta'tilda":
-        return { color: '#faad14', bg: 'rgba(250, 173, 20, 0.2)' };
+        return { color: "#faad14", bg: "rgba(250, 173, 20, 0.2)" };
       default:
-        return { color: '#ff4d4f', bg: 'rgba(255, 77, 79, 0.2)' };
+        return { color: "#ff4d4f", bg: "rgba(255, 77, 79, 0.2)" };
     }
   };
 
   const getActiveColor = (active: boolean) => {
-    return active 
-      ? { color: '#52c41a', bg: 'rgba(82, 196, 26, 0.2)' }
-      : { color: '#ff4d4f', bg: 'rgba(255, 77, 79, 0.2)' };
+    return active
+      ? { color: "#52c41a", bg: "rgba(82, 196, 26, 0.2)" }
+      : { color: "#ff4d4f", bg: "rgba(255, 77, 79, 0.2)" };
   };
-  
+
   const getRoleColor = (role: string) => {
     switch (role.toLowerCase()) {
-      case 'admin':
-        return { color: '#1890ff', bg: 'rgba(24, 144, 255, 0.2)' };
-      case 'manager':
-        return { color: '#722ed1', bg: 'rgba(114, 46, 209, 0.2)' };
+      case "admin":
+        return { color: "#1890ff", bg: "rgba(24, 144, 255, 0.2)" };
+      case "manager":
+        return { color: "#722ed1", bg: "rgba(114, 46, 209, 0.2)" };
       default:
-        return { color: '#13c2c2', bg: 'rgba(19, 194, 194, 0.2)' };
+        return { color: "#13c2c2", bg: "rgba(19, 194, 194, 0.2)" };
     }
   };
 
@@ -107,26 +184,26 @@ const AdminTable = () => {
         image ? (
           <Avatar src={image} />
         ) : (
-          <Avatar>{record.first_name.charAt(0)}</Avatar>
+          <Avatar>{record.first_name?.charAt(0) || ""}</Avatar>
         ),
     },
     {
-      title: "First Name",
+      title: "Ism",
       dataIndex: "first_name",
       key: "first_name",
-      render: (text) => <span style={{ fontWeight: 500 }}>{text}</span>
+      render: (text) => <span style={{ fontWeight: 500 }}>{text}</span>,
     },
     {
-      title: "Last Name",
+      title: "Familiya",
       dataIndex: "last_name",
       key: "last_name",
-      render: (text) => <span style={{ fontWeight: 500 }}>{text}</span>
+      render: (text) => <span style={{ fontWeight: 500 }}>{text || ""}</span>,
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      render: (text) => <span style={{ color: '#d1d5db' }}>{text}</span>
+      render: (text) => <span style={{ color: "#d1d5db" }}>{text}</span>,
     },
     {
       title: "Role",
@@ -135,24 +212,24 @@ const AdminTable = () => {
       render: (role: string) => {
         const { color, bg } = getRoleColor(role);
         return (
-          <span 
-            style={{ 
-              display: 'inline-block',
-              padding: '4px 12px',
-              borderRadius: '20px',
-              fontSize: '12px',
+          <span
+            style={{
+              display: "inline-block",
+              padding: "4px 12px",
+              borderRadius: "20px",
+              fontSize: "12px",
               fontWeight: 500,
-              textTransform: 'capitalize',
-              color: color, 
+              textTransform: "capitalize",
+              color: color,
               backgroundColor: bg,
               border: `1px solid ${color}`,
-              boxShadow: `0 0 8px ${bg}`
+              boxShadow: `0 0 8px ${bg}`,
             }}
           >
             {role}
           </span>
         );
-      }
+      },
     },
     {
       title: "Status",
@@ -161,48 +238,48 @@ const AdminTable = () => {
       render: (status: string) => {
         const { color, bg } = getStatusColor(status);
         return (
-          <span 
-            style={{ 
-              display: 'inline-block',
-              padding: '4px 12px',
-              borderRadius: '20px',
-              fontSize: '12px',
+          <span
+            style={{
+              display: "inline-block",
+              padding: "4px 12px",
+              borderRadius: "20px",
+              fontSize: "12px",
               fontWeight: 500,
-              color: color, 
+              color: color,
               backgroundColor: bg,
               border: `1px solid ${color}`,
-              boxShadow: `0 0 8px ${bg}`
+              boxShadow: `0 0 8px ${bg}`,
             }}
           >
-            {status.toUpperCase()}
+            {status?.toUpperCase() || ""}
           </span>
         );
-      }
+      },
     },
     {
-      title: "Is Active?",
+      title: "Is Active",
       dataIndex: "active",
       key: "active",
       render: (active: boolean) => {
         const { color, bg } = getActiveColor(active);
         return (
-          <span 
-            style={{ 
-              display: 'inline-block',
-              padding: '4px 12px',
-              borderRadius: '20px',
-              fontSize: '12px',
+          <span
+            style={{
+              display: "inline-block",
+              padding: "4px 12px",
+              borderRadius: "20px",
+              fontSize: "12px",
               fontWeight: 500,
-              color: color, 
+              color: color,
               backgroundColor: bg,
               border: `1px solid ${color}`,
-              boxShadow: `0 0 8px ${bg}`
+              boxShadow: `0 0 8px ${bg}`,
             }}
           >
-            {active ? "TRUE" : "FALSE"}
+            {active ? "HA" : "YO'Q"}
           </span>
         );
-      }
+      },
     },
     ...(userRole === "manager"
       ? [
@@ -211,45 +288,36 @@ const AdminTable = () => {
             key: "actions",
             render: (_: any, record: AdminType) => {
               const items = [
-                {
-                  label: "Edit",
-                  key: "edit",
-                },
-                {
-                  label: "Delete",
-                  key: "delete",
-                  danger: true,
-                },
+                { label: "Tahrirlash", key: "edit" },
+                { label: "O'chirish", key: "delete", danger: true },
+                { label: "Ta'tilga chiqarish", key: "vacation" },
+                { label: "Ta'tildan qaytarish", key: "return-vacation" },
+                { label: "Ishga qaytarish", key: "return-work-staff" },
               ];
 
               return (
                 <Dropdown
                   menu={{
                     items,
-                    onClick: ({ key }: {key: string}) => handleMenuClick(record, key),
+                    onClick: ({ key }) => handleMenuClick(record, key),
                   }}
                   trigger={["click"]}
                 >
-                  <Button 
-                    type="text" 
-                    icon={<MoreOutlined rotate={90} />} 
-                    style={{ 
-                      color: '#d1d5db' 
-                    }}
-                  />
+                  <Button type="text" icon={<MoreOutlined rotate={90} />} />
                 </Dropdown>
               );
             },
           },
-        ] as ColumnsType<AdminType>
+        ]
       : []),
   ];
 
-  const customTableStyles = {
-    tableLayout: 'fixed',
-    borderCollapse: 'separate',
-    borderSpacing: '0 10px' 
-  } as React.CSSProperties;
+  const customTableStyles: React.CSSProperties = {
+    tableLayout: "fixed",
+    borderCollapse: "separate",
+    borderSpacing: "0 10px",
+  };
+
   const rowClassName = () => "admin-table-row";
 
   return (
@@ -257,58 +325,58 @@ const AdminTable = () => {
       theme={{
         algorithm: theme.darkAlgorithm,
         token: {
-          colorBgContainer: '#1f2937',
-          colorBorderSecondary: '#374151',
-          colorText: '#ffffff',
-          colorTextSecondary: '#d1d5db',
+          colorBgContainer: "#1f2937",
+          colorBorderSecondary: "#374151",
+          colorText: "#ffffff",
+          colorTextSecondary: "#d1d5db",
           borderRadius: 8,
-          colorPrimary: '#4f46e5',
+          colorPrimary: "#4f46e5",
         },
         components: {
           Table: {
-            headerBg: '#111827',
-            headerColor: '#9ca3af',
-            rowHoverBg: '#1e293b',
-            colorBgContainer: '#111827',
+            headerBg: "#111827",
+            headerColor: "#9ca3af",
+            rowHoverBg: "#1e293b",
+            colorBgContainer: "#111827",
           },
           Modal: {
-            contentBg: '#1f2937',
-            headerBg: '#1f2937',
-            titleColor: 'white',
+            contentBg: "#1f2937",
+            headerBg: "#1f2937",
+            titleColor: "white",
           },
           Button: {
-            defaultBg: '#374151',
-            defaultColor: 'white',
-            primaryColor: 'white',
+            defaultBg: "#374151",
+            defaultColor: "white",
+            primaryColor: "white",
           },
-        }
+        },
       }}
     >
-      <div style={{
-        width: '100%', 
-      }}>
-      
-        
-        <div style={{
-          border: '1px solid #1f2937',
-          overflow: 'hidden',
-          backgroundColor: '#111827',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2)'
-        }}>
+      <div style={{ width: "100%" }}>
+        <div
+          style={{
+            border: "1px solid #1f2937",
+            overflow: "hidden",
+            backgroundColor: "#111827",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.2)",
+            borderRadius: "8px",
+            margin: "8px",
+          }}
+        >
           <Table
             columns={columns}
             dataSource={admins}
             loading={isLoading}
             rowKey={(record) => record._id}
-            pagination={{ 
-              position: ['bottomCenter'],
-              className: 'custom-pagination',
-              showSizeChanger: false
+            pagination={{
+              position: ["bottomCenter"],
+              className: "custom-pagination",
+              showSizeChanger: false,
             }}
-            className="admin-dark-table "
+            className="admin-dark-table"
             style={customTableStyles}
             rowClassName={rowClassName}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: "max-content" }}
           />
         </div>
       </div>
@@ -317,33 +385,119 @@ const AdminTable = () => {
 
       <Modal
         title={
-          <div style={{ display: 'flex', alignItems: 'center', color: '#ef4444' }}>
-            <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Confirm Deletion</span>
+          <div
+            style={{ display: "flex", alignItems: "center", color: "#ef4444" }}
+          >
+            <span style={{ fontSize: "18px", fontWeight: "bold" }}>
+              O'chirishni tasdiqlang
+            </span>
           </div>
         }
         open={isDeleteModalOpen}
         onOk={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
-        okText="Delete"
-        cancelText="Cancel"
-        okButtonProps={{ 
-          danger: true, 
+        okText="O'chirish"
+        cancelText="Bekor qilish"
+        okButtonProps={{
+          danger: true,
           loading: isDeleting,
-          style: { backgroundColor: '#ef4444', borderColor: '#ef4444' }
+          style: { backgroundColor: "#ef4444", borderColor: "#ef4444" },
         }}
         cancelButtonProps={{
-          style: { borderColor: '#4b5563', color: '#d1d5db' }
+          style: { borderColor: "#4b5563", color: "#d1d5db" },
         }}
         className="admin-dark-modal"
         centered
       >
         {adminToDelete && (
-          <p style={{ color: '#d1d5db' }}>
-            Are you sure you want to delete <span style={{ fontWeight: 'bold', color: 'white' }}>{adminToDelete.first_name} {adminToDelete.last_name}</span>? This action cannot be undone.
+          <p style={{ color: "#d1d5db" }}>
+            Siz rostdan ham{" "}
+            <span style={{ fontWeight: "bold", color: "white" }}>
+              {adminToDelete.first_name} {adminToDelete.last_name}
+            </span>
+            ni o'chirishni xohlaysizmi? Bu amalni qaytarib bo'lmaydi.
           </p>
         )}
       </Modal>
-    </ConfigProvider>);
+
+      <Modal
+        title={
+          <div
+            style={{ display: "flex", alignItems: "center", color: "#faad14" }}
+          >
+            <span style={{ fontSize: "18px", fontWeight: "bold" }}>
+              Ta'tildan qaytarishni tasdiqlang
+            </span>
+          </div>
+        }
+        open={isReturnVacationModalOpen}
+        onOk={handleReturnVacationConfirm}
+        onCancel={handleReturnVacationCancel}
+        okText="Ha"
+        cancelText="Yo'q"
+        okButtonProps={{
+          loading: isReturningVacation,
+          style: { backgroundColor: "blue", borderColor: "blue" },
+        }}
+        cancelButtonProps={{
+          style: { borderColor: "red", color: "red" },
+        }}
+        className="admin-dark-modal"
+        centered
+      >
+        {adminToReturnVacation && (
+          <p style={{ color: "#d1d5db" }}>
+            Siz rostdan ham{" "}
+            <span style={{ fontWeight: "bold", color: "white" }}>
+              {adminToReturnVacation.first_name}{" "}
+              {adminToReturnVacation.last_name}
+            </span>
+            ni ta'tildan qaytarishni xohlaysizmi?
+          </p>
+        )}
+      </Modal>
+      <Modal
+        title={
+          <div
+            style={{ display: "flex", alignItems: "center", color: "#4f46e5" }}
+          >
+            <span style={{ fontSize: "18px", fontWeight: "bold" }}>
+              Ishga qaytarishni tasdiqlang
+            </span>
+          </div>
+        }
+        open={isReturnWorkModalOpen}
+        onOk={handleReturnWorkConfirm}
+        onCancel={handleReturnWorkCancel}
+        okText="Ha"
+        cancelText="Yo'q"
+        okButtonProps={{
+          style: { backgroundColor: "#4f46e5", borderColor: "#4f46e5" },
+        }}
+        cancelButtonProps={{
+          style: { borderColor: "red", color: "red" },
+        }}
+        className="admin-dark-modal"
+        centered
+      >
+        {adminToReturnWork && (
+          <p style={{ color: "#d1d5db" }}>
+            Siz rostdan ham{" "}
+            <span style={{ fontWeight: "bold", color: "white" }}>
+              {adminToReturnWork.first_name} {adminToReturnWork.last_name}
+            </span>{" "}
+            ni ishga qaytarmoqchimisiz?
+          </p>
+        )}
+      </Modal>
+
+      <VacationModal
+        open={!!vacationAdminId}
+        onClose={() => setVacationAdminId(null)}
+        adminId={vacationAdminId}
+      />
+    </ConfigProvider>
+  );
 };
 
 export default AdminTable;

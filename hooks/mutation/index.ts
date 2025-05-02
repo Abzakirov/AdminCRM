@@ -6,12 +6,16 @@ import { showErrorToast, showSuccessToast } from "@/shared/toast/Toast";
 import { useRouter } from "next/navigation";
 import Cookie from "js-cookie";
 import { z } from "zod";
-import type { AdminType, AdminUserType, EditAdminType, EditProfileImageType, UserType } from "@/@types";
+import type {
+  AdminType,
+  AdminUserType,
+  EditAdminType,
+  EditPasswordType,
+  EditProfileImageType,
+  UserType,
+  VacationType,
+} from "@/@types";
 
-
-interface UploadImageData {
-  image: File;
-}
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
@@ -31,12 +35,12 @@ export const useLoginMutation = () => {
     onSuccess: (data: UserType) => {
       Cookie.set("user", JSON.stringify(data), { expires: 1 / 24 });
       Cookie.set("token", data.token, { expires: 1 / 24 });
-      showSuccessToast("Login successful!");
+      showSuccessToast("Muvaffaqiyatli tizimga kirildi!");
       router.push("/");
     },
     onError: (error: any) => {
       showErrorToast(
-        error.response?.data?.message || error.message || "Email or password is incorrect"
+        error.response?.data?.message || error.message || "Email yoki parol noto‘g‘ri"
       );
     },
   });
@@ -51,7 +55,6 @@ export const useEditMutationCache = <T extends { _id: string }>(queryKey: string
   };
 };
 
-// --- EDIT ADMIN MUTATION ---
 export const useEditAdminMutation = () => {
   const queryClient = useQueryClient();
 
@@ -65,10 +68,10 @@ export const useEditAdminMutation = () => {
       queryClient.setQueryData<AdminType[]>(["admins"], (old) =>
         old?.map((admin) => (admin._id === data._id ? { ...admin, ...data } : admin))
       );
-      showSuccessToast("Admin successfully edited!");
+      showSuccessToast("Admin muvaffaqiyatli tahrirlandi!");
     },
     onError: (error: any) => {
-      showErrorToast(error?.response?.data?.message || "Something went wrong!");
+      showErrorToast(error?.response?.data?.message || "Xatolik yuz berdi!");
     },
   });
 };
@@ -84,12 +87,10 @@ export const useDeleteAdminMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admins"] });
-      showSuccessToast("Admin successfully deleted!");
+      showSuccessToast("Admin muvaffaqiyatli o‘chirildi!");
     },
     onError: (error: any) => {
-      showErrorToast(
-        error?.response?.data?.message || "Failed to delete admin!"
-      );
+      showErrorToast(error?.response?.data?.message || "Adminni o‘chirishda xatolik!");
     },
   });
 };
@@ -104,17 +105,14 @@ export const useAdminCreateMutation = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey:["admins"]
-      });
-      showSuccessToast("Admin successfully created!");
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
+      showSuccessToast("Admin muvaffaqiyatli yaratildi!");
     },
     onError: (error: any) => {
-      showErrorToast(error?.response?.data?.message || "Failed to create admin!");
+      showErrorToast(error?.response?.data?.message || "Admin yaratishda xatolik!");
     },
   });
 };
-
 
 export const useEditProfileMutation = () => {
   const queryClient = useQueryClient();
@@ -126,29 +124,21 @@ export const useEditProfileMutation = () => {
       return response.data.data;
     },
     onSuccess() {
-     queryClient.invalidateQueries({
-        queryKey:["admins"]
-      });
-      showSuccessToast("Profile successfully edited!");
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
+      showSuccessToast("Profil muvaffaqiyatli tahrirlandi!");
     },
     onError: (error: any) => {
-      showErrorToast(error?.response?.data?.message || "Failed to create admin!");
+      showErrorToast(error?.response?.data?.message || "Profilni tahrirlashda xatolik!");
     },
-  })
-
-  
-}
-
+  });
+};
 
 export const useEditProfileMutationCache = () => {
-  const queryclient = useQueryClient();
+  const queryClient = useQueryClient();
   return (data: EditProfileImageType) => {
-    return queryclient.setQueryData(
-      ["profiledata"],
-      (old: EditProfileImageType | undefined) => {
-        return { ...old, ...data };
-      }
-    );
+    return queryClient.setQueryData(["profiledata"], (old: EditProfileImageType | undefined) => {
+      return { ...old, ...data };
+    });
   };
 };
 
@@ -177,10 +167,153 @@ export const useEditProfileImgMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profiledata"] });
-      showSuccessToast("Profile image updated successfully!");
+      showSuccessToast("Profil rasmi muvaffaqiyatli yangilandi!");
     },
     onError: (error: any) => {
-      showErrorToast(error?.response?.data?.message || "Failed to upload profile image");
+      showErrorToast(error?.response?.data?.message || "Rasm yuklashda xatolik yuz berdi!");
+    },
+  });
+};
+
+export const useEditPasswordMutation = () => {
+  return useMutation({
+    mutationKey: ["edit-password"],
+    mutationFn: async (data: EditPasswordType) => {
+      const response = await axiosInstance.post("/auth/edit-password", data);
+      return response.data.data;
+    },
+    onSuccess: () => {
+      showSuccessToast("Parol muvaffaqiyatli o‘zgartirildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "Parolni o‘zgartirishda xatolik!");
+    },
+  });
+};
+
+export const useVacationCreateMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["create-vacation"],
+    mutationFn: async (data: VacationType) => {
+      const response = await axiosInstance.post("/staff/leave-staff", data);
+      return response.data.data;
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["vacations"] });
+      try {
+        const res = await axiosInstance.get("/staff/all-admins");
+        queryClient.setQueryData(["admins"], res.data.data);
+      } catch (error) {
+        showErrorToast("Ta’til yaratilgandan so‘ng adminlar ro‘yxatini olishda xatolik yuz berdi.");
+      }
+      showSuccessToast("Admin  Ta’tilga  muvaffaqiyatli Chiqildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "Ta’til yaratishda xatolik!");
+    },
+  });
+};
+
+export const useReturnVacationMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["return-vacation"],
+    mutationFn: async (_id: string) => {
+      const response = await axiosInstance.post(`/staff/leave-exit-staff`, { _id });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
+      showSuccessToast("Admin ta’tildan muvaffaqiyatli qaytdi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "Ta’tildan qaytishda xatolik!");
+    },
+  });
+};
+
+export const useReturnWorkMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["return-work"],
+    mutationFn: async (_id: string) => {
+      const response = await axiosInstance.post(`/staff/return-work-staff`, { _id });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
+      showSuccessToast("Admin ishga muvaffaqiyatli qaytarildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "Ishga qaytishda xatolik!");
+    },
+  });
+};
+
+
+// TEachers
+
+export const useTeacherCreateMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["create-teacher"],
+    mutationFn: async (data: AdminUserType) => {
+      const response = await axiosInstance.post("/teacher/create-teacher", data);
+      return response.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teachers"] });
+      showSuccessToast("O'qituvchi muvaffaqiyatli yaratildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "O'qituvchi yaratishda xatolik!");
+    },
+  });
+};
+
+
+export const useDeleteTeahcerMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["delete-teacher"],
+    mutationFn: async (_id: string) => {
+      const response = await axiosInstance.delete(`/teacher/fire-teacher`, { data: { _id } });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teachers"] });
+      showSuccessToast("O‘qituvchi muvaffaqiyatli o‘chirildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "O‘qituvchini o‘chirishda xatolik!");
+    },
+  });
+};
+
+
+
+
+export const useReturnTeacherWorkMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["return-work"],
+    mutationFn: async (_id: string) => {
+      const response = await axiosInstance.post(`/teacher/return-teacher`, { _id });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teachers"] });
+      showSuccessToast("O'qituvchi ishga muvaffaqiyatli qaytarildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "Ishga qaytishda xatolik!");
     },
   });
 };

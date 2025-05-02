@@ -9,7 +9,7 @@ interface Props {
   showDrawer: () => void;
 }
 
-const OpenDrawerButton: React.FC<Props> = ({ showDrawer }) => {
+const OpenDrawerTeacherButton: React.FC<Props> = ({ showDrawer }) => {
   const [user, setUser] = useState<{ role: string } | null>(null);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const OpenDrawerButton: React.FC<Props> = ({ showDrawer }) => {
     if (user?.role === "manager") {
       showDrawer();
     } else {
-      showErrorToast("Faqat Manager bo‘lishingiz kerak");
+      showErrorToast("Faqat admin bo‘lishingiz kerak");
     }
   };
 
@@ -36,9 +36,9 @@ const OpenDrawerButton: React.FC<Props> = ({ showDrawer }) => {
 
   return (
     <Button type="primary" onClick={handleClick}>
-      Create admin
+      Create Teacher
     </Button>
   );
 };
 
-export default OpenDrawerButton;
+export default OpenDrawerTeacherButton;
