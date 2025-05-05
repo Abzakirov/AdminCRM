@@ -12,7 +12,7 @@ const AdminShell = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <main className="flex">
+    <main className="flex ">
       <Sidebar isOpen={isSidebarOpen} />
       <div className="w-full">
         <Header onToggleSidebar={toggleSidebar} />

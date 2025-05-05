@@ -24,8 +24,11 @@ import {
 import Cookies from "js-cookie";
 import "./AdminTable.css";
 import VacationModal from "../mod/VacationModal";
+import { useRouter } from "next/navigation";
+import type { MenuProps } from "antd";
 
 const AdminTable = () => {
+  const router = useRouter();
   const { data, isLoading, refetch } = useQuery<AdminType[]>({
     queryKey: ["admins"],
     queryFn: async () => {
@@ -71,7 +74,16 @@ const AdminTable = () => {
     }
   }, [data]);
 
-  const handleMenuClick = (record: AdminUserType, action: string) => {
+  const handleRowClick = (record: AdminType) => {
+    router.push(`/info_admin?_id=${record._id}`);
+  };
+
+  const handleMenuClick = (
+    e: React.MouseEvent,
+    record: AdminUserType,
+    action: string
+  ) => {
+    e.stopPropagation();
     switch (action) {
       case "edit":
         setSelectedUser(record);
@@ -91,7 +103,6 @@ const AdminTable = () => {
         setAdminToReturnWork(record);
         setIsReturnWorkModalOpen(true);
         break;
-
       default:
         break;
     }
@@ -99,7 +110,6 @@ const AdminTable = () => {
 
   const handleDeleteConfirm = () => {
     if (!adminToDelete) return;
-
     deleteAdmin(adminToDelete._id, {
       onSuccess: () => {
         setIsDeleteModalOpen(false);
@@ -111,7 +121,6 @@ const AdminTable = () => {
 
   const handleReturnVacationConfirm = () => {
     if (!adminToReturnVacation) return;
-
     returnVacation(adminToReturnVacation._id, {
       onSuccess: () => {
         setIsReturnVacationModalOpen(false);
@@ -121,18 +130,8 @@ const AdminTable = () => {
     });
   };
 
-  const handleDeleteCancel = () => {
-    setIsDeleteModalOpen(false);
-    setAdminToDelete(null);
-  };
-
-  const handleReturnVacationCancel = () => {
-    setIsReturnVacationModalOpen(false);
-    setAdminToReturnVacation(null);
-  };
   const handleReturnWorkConfirm = () => {
     if (!adminToReturnWork) return;
-
     returnWork(adminToReturnWork._id, {
       onSuccess: () => {
         setIsReturnWorkModalOpen(false);
@@ -140,11 +139,6 @@ const AdminTable = () => {
         refetch();
       },
     });
-  };
-
-  const handleReturnWorkCancel = () => {
-    setIsReturnWorkModalOpen(false);
-    setAdminToReturnWork(null);
   };
 
   const getStatusColor = (status: string) => {
@@ -287,7 +281,7 @@ const AdminTable = () => {
             title: "Actions",
             key: "actions",
             render: (_: any, record: AdminType) => {
-              const items = [
+              const items: MenuProps["items"] = [
                 { label: "Tahrirlash", key: "edit" },
                 { label: "O'chirish", key: "delete", danger: true },
                 { label: "Ta'tilga chiqarish", key: "vacation" },
@@ -296,16 +290,39 @@ const AdminTable = () => {
               ];
 
               return (
-                <Dropdown
-                  menu={{
-                    items,
-                    onClick: ({ key }) => handleMenuClick(record, key),
-                  }}
-                  trigger={["click"]}
-                >
-                  <Button type="text" icon={<MoreOutlined rotate={90} />} />
-                </Dropdown>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <Dropdown
+                    menu={{
+                      items,
+                      onClick: ({ key, domEvent }) => {
+                        domEvent.stopPropagation();
+                        handleMenuClick(
+                          domEvent as React.MouseEvent,
+                          record,
+                          key
+                        );
+                      },
+                    }}
+                    trigger={["click"]}
+                  >
+                    <Button
+                      type="text"
+                      icon={<MoreOutlined rotate={90} />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                      }}
+                    />
+                  </Dropdown>
+                </div>
               );
+            },
+            onCell: () => {
+              return {
+                onClick: (e: React.MouseEvent) => {
+                  e.stopPropagation();
+                },
+              };
             },
           },
         ]
@@ -377,6 +394,12 @@ const AdminTable = () => {
             style={customTableStyles}
             rowClassName={rowClassName}
             scroll={{ x: "max-content" }}
+            onRow={(record) => {
+              return {
+                onClick: () => handleRowClick(record),
+                style: { cursor: "pointer" },
+              };
+            }}
           />
         </div>
       </div>
@@ -395,7 +418,7 @@ const AdminTable = () => {
         }
         open={isDeleteModalOpen}
         onOk={handleDeleteConfirm}
-        onCancel={handleDeleteCancel}
+        onCancel={() => setIsDeleteModalOpen(false)}
         okText="O'chirish"
         cancelText="Bekor qilish"
         okButtonProps={{
@@ -432,7 +455,7 @@ const AdminTable = () => {
         }
         open={isReturnVacationModalOpen}
         onOk={handleReturnVacationConfirm}
-        onCancel={handleReturnVacationCancel}
+        onCancel={() => setIsReturnVacationModalOpen(false)}
         okText="Ha"
         cancelText="Yo'q"
         okButtonProps={{
@@ -456,6 +479,7 @@ const AdminTable = () => {
           </p>
         )}
       </Modal>
+
       <Modal
         title={
           <div
@@ -468,7 +492,7 @@ const AdminTable = () => {
         }
         open={isReturnWorkModalOpen}
         onOk={handleReturnWorkConfirm}
-        onCancel={handleReturnWorkCancel}
+        onCancel={() => setIsReturnWorkModalOpen(false)}
         okText="Ha"
         cancelText="Yo'q"
         okButtonProps={{

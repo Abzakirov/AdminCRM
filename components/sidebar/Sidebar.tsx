@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     title: string,
     items: typeof sidebarMenu | typeof others_menu
   ) => (
-    <div className="mt-5">
+    <div className="mt-5 ">
       <h2 className="text-lg font-semibold dark:text-white">{title}</h2>
       <div className="flex flex-col gap-3 mt-4">
         {items.map(({ Icons, id, title, path }) => {
@@ -68,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               className={`!flex !items-center !gap-3 !justify-start !w-full !p-2 !border transition-all duration-200
                 ${
                   isActive
-                    ? "!border-accent !bg-accent text-[black] dark:!text-white "
+                    ? "!border-accent !bg-[#F2F3F4] dark:!bg-[#374151] text-[black] dark:!text-white "
                     : "!border-transparent hover:!border-gray-300 dark:!text-white"
                 }`}
               type="text"
@@ -95,7 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       className={`${
         isOpen ? "w-[280px]" : "w-[80px]"
       } h-screen p-4 border-r border-gray-200 dark:border-gray-700 transition-all
-    sticky top-0 bg-white dark:bg-[#1f1f1f] z-30`}
+    sticky top-0 bg-white dark:!bg-[#111827] z-30`}
     >
       <div className="flex justify-center items-center">
         <div className="dark:hidden flex items-center">
