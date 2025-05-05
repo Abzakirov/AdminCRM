@@ -74,9 +74,7 @@ const AdminTable = () => {
     }
   }, [data]);
 
-  const handleRowClick = (record: AdminType) => {
-    router.push(`/info_admin?_id=${record._id}`);
-  };
+  
 
   const handleMenuClick = (
     e: React.MouseEvent,
@@ -396,7 +394,7 @@ const AdminTable = () => {
             scroll={{ x: "max-content" }}
             onRow={(record) => {
               return {
-                onClick: () => handleRowClick(record),
+                onClick: () => router.push(`/admins/${record._id}`),
                 style: { cursor: "pointer" },
               };
             }}

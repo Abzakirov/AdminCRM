@@ -1,7 +1,6 @@
 "use client";
 
-import  { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { AdminType } from '@/@types';
 import { 
   Card, 
@@ -30,40 +29,33 @@ import {
 import moment from 'moment';
 import { axiosInstance } from '@/hooks/useAxios/useAxios';
 
-const InfoAdmin = () => {
-  const searchParams = useSearchParams();
-  const adminId = searchParams.get('_id');
+const InfoAdmin = ({id}: {id: string}) => {
   const [adminData, setAdminData] = useState<AdminType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAdminData = async () => {
-      if (!adminId) {
-        setError("Admin ID not found");
-        setLoading(false);
-        return;
-      }
-
+      setLoading(true);
       try {
-        setLoading(true);
-        const response = await axiosInstance.get(`/staff/info/${adminId}`);
-        if (response.data.success) {
+        const response = await axiosInstance.get(`/staff/info/${id}`);
+        if (response.data && response.data.data) {
           setAdminData(response.data.data);
         } else {
-          setError("Failed to fetch admin data");
+          setError("Ma'lumot topilmadi");
         }
-      } catch (err) {
-        console.error("Error fetching admin data:", err);
-        setError("Failed to fetch admin data");
-        message.error("Admin ma'lumotlarini yuklashda xatolik yuz berdi");
+      } catch (err: any) {
+        setError(err.response?.data?.message || "Ma'lumotni yuklashda xatolik yuz berdi");
+        message.error("Ma'lumotni yuklashda xatolik yuz berdi");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAdminData();
-  }, [adminId]);
+    if (id) {
+      fetchAdminData();
+    }
+  }, [id]);
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
