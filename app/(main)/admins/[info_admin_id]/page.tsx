@@ -18,6 +18,6 @@ export default async function InfoAdminPage({ params }: { params: { info_admin_i
   const adminData = await getAdminData(params.info_admin_id);
   
   return (
-    <InfoAdmin id={params.info_admin_id} initialData={adminData} />
+    <InfoAdmin id={params?.info_admin_id} initialData={adminData} />
   );
 }

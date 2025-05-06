@@ -17,12 +17,12 @@ const AdminHeader: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-between p-3">
+    <div className="flex items-center justify-between p-3 max-[600px]:gap-4 max-[600px]:flex-wrap max-[600px]:justify-center">
       <div>
-        <h2 className="text-[18px] font-medium">Administrative authorities directory:</h2>
+        <h2 className="text-[18px] font-medium">Adminlar royxati:</h2>
       </div>
-      <div className="flex items-center gap-3">
-        <Input type="text" placeholder="Search Administrative authorities" className="!w-[270px]" />
+      <div className="flex items-center gap-3 ">
+        <Input type="text" placeholder="Search Administrative authorities" className="!w-[270px] max-[500px]:!w-full" />
         <OpenDrawerButton showDrawer={showDrawer} />
         <AddAdminDrawer visible={drawerVisible} onClose={closeDrawer} />
       </div>

@@ -1,4 +1,9 @@
-import { BrandCrumpType, SidebarMenuType } from "@/@types";
+import {
+  BrandCrumpType,
+  ButtomsidebarMenuType,
+  MenuDataType,
+  SidebarMenuType,
+} from "@/@types";
 import {
   CircleUserRound,
   Component,
@@ -16,7 +21,7 @@ export const sidebarMenu: SidebarMenuType[] = [
     title: "Asosiy",
     path: "/",
     Icons: LayoutGrid,
-    roles: ["admin", "manager", "teacher", "student"], 
+    roles: ["admin", "manager", "teacher", "student"],
   },
   {
     id: 2,
@@ -30,7 +35,7 @@ export const sidebarMenu: SidebarMenuType[] = [
     title: "Adminlar",
     path: "/admins",
     Icons: ContactRound,
-    roles: ["admin", "manager"], 
+    roles: ["admin", "manager"],
   },
   {
     id: 4,
@@ -55,23 +60,81 @@ export const sidebarMenu: SidebarMenuType[] = [
   },
 ];
 
+export const ButtomsidebarMenu: ButtomsidebarMenuType[] = [
+  {
+    id: 1,
+    path: "/",
+    Icons: LayoutGrid,
+    roles: ["admin", "manager", "teacher", "student"],
+  },
+
+  {
+    id: 2,
+    path: "/settings",
+    Icons: Settings,
+    roles: ["admin", "manager", "teacher", "student"],
+  },
+  {
+    id: 3,
+    path: "/profile",
+    Icons: CircleUserRound,
+    roles: ["admin", "manager", "teacher", "student"],
+  },
+];
+
+export const MenuData: MenuDataType[] = [
+  {
+    id: 1,
+    path: "/managers",
+    Icons: ShieldUser,
+    roles: ["manager"],
+    title: "Manajerlar",
+  },
+  {
+    id: 2,
+    path: "/admins",
+    title: "Adminlar",
+    Icons: ContactRound,
+    roles: ["admin", "manager"],
+  },
+  {
+    id: 3,
+    path: "/teachers",
+    Icons: UserRoundPen,
+    title: "O'qituvchilar",
+    roles: ["admin", "manager"],
+  },
+  {
+    id: 4,
+    path: "/students",
+    title: "O'quvchilar",
+    Icons: Users,
+    roles: ["admin", "manager", "teacher"],
+  },
+  {
+    id: 5,
+    path: "/groups",
+    title: "Groups",
+    Icons: Component,
+    roles: ["admin", "manager", "teacher"],
+  },
+];
 export const others_menu: SidebarMenuType[] = [
   {
     id: 1,
     title: "Sozlamalar",
     path: "/settings",
     Icons: Settings,
-    roles: ["admin", "manager", "teacher", "student"], 
+    roles: ["admin", "manager", "teacher", "student"],
   },
   {
     id: 2,
     title: "Profil",
     path: "/profile",
     Icons: CircleUserRound,
-    roles: ["admin", "manager", "teacher", "student"], 
+    roles: ["admin", "manager", "teacher", "student"],
   },
 ];
-
 
 export const BrandCrump: BrandCrumpType[] = [
   {
@@ -114,7 +177,4 @@ export const BrandCrump: BrandCrumpType[] = [
     title: "Profile",
     path: "/profile",
   },
- 
 ];
-
-

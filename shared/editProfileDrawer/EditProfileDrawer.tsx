@@ -6,12 +6,12 @@ export type EditProfileType = {
   email: string;
 };
 
-
 import React, { useState, useEffect } from "react";
-import { Drawer, Button, Input } from "antd";
+import { Drawer, Button, Input, ConfigProvider, theme } from "antd";
 import { UserType } from "@/@types"; 
 import { useEditProfileMutation } from "@/hooks/mutation";
 import Cookies from "js-cookie";
+import { useTheme } from "next-themes";
 
 interface EditProfileDrawerProps {
   visible: boolean;
@@ -27,6 +27,7 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({ visible, onClose,
     email: "",
   });
 
+  const { theme: currentTheme } = useTheme();
   const { mutate, isPending } = useEditProfileMutation();
 
   useEffect(() => {
@@ -66,47 +67,106 @@ const EditProfileDrawer: React.FC<EditProfileDrawerProps> = ({ visible, onClose,
     });
   };
 
+  // Стили для dark темы
+  const darkThemeStyles = {
+    drawer: {
+      body: {
+        backgroundColor: "#111827",
+        color: "#F3F4F6",
+      },
+      header: {
+        backgroundColor: "#111827",
+        borderBottom: "1px solid #1F2937",
+        color: "#FFFFFF",
+      },
+      content: {
+        backgroundColor: "#111827",
+      }
+    },
+    input: {
+      backgroundColor: "#1F2937",
+      color: "#F3F4F6",
+      borderColor: "#374151",
+    },
+    label: {
+      color: "#D1D5DB",
+    },
+    cancelButton: {
+      backgroundColor: "#1F2937",
+      color: "#F3F4F6",
+      borderColor: "#374151",
+    }
+  };
+
   return (
-    <Drawer
-      title="Edit Profile"
-      placement="right"
-      onClose={onClose}
-      open={visible}
-      width={400}
+    <ConfigProvider
+      theme={{
+        algorithm: currentTheme === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
+      }}
     >
-      <div className="flex flex-col gap-4">
-        <div>
-          <label className="block mb-1">First Name:</label>
-          <Input
-            name="first_name"
-            value={formData.first_name}
-            onChange={handleChange}
-          />
+      <Drawer
+        title="Edit Profile"
+        placement="right"
+        onClose={onClose}
+        open={visible}
+        width={450}
+        styles={currentTheme === 'dark' ? darkThemeStyles.drawer : {}}
+      >
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className={`block mb-1 ${currentTheme === 'dark' ? 'text-gray-300' : ''}`}>
+              First Name:
+            </label>
+            <Input
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleChange}
+              className={currentTheme === 'dark' ? 'dark-theme-input' : ''}
+              style={currentTheme === 'dark' ? darkThemeStyles.input : {}}
+            />
+          </div>
+          <div>
+            <label className={`block mb-1 ${currentTheme === 'dark' ? 'text-gray-300' : ''}`}>
+              Last Name:
+            </label>
+            <Input
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleChange}
+              className={currentTheme === 'dark' ? 'dark-theme-input' : ''}
+              style={currentTheme === 'dark' ? darkThemeStyles.input : {}}
+            />
+          </div>
+          <div>
+            <label className={`block mb-1 ${currentTheme === 'dark' ? 'text-gray-300' : ''}`}>
+              Email:
+            </label>
+            <Input
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={currentTheme === 'dark' ? 'dark-theme-input' : ''}
+              style={currentTheme === 'dark' ? darkThemeStyles.input : {}}
+            />
+          </div>
+          <div className="mt-4 flex justify-end gap-4">
+            <Button 
+              onClick={onClose}
+              style={currentTheme === 'dark' ? darkThemeStyles.cancelButton : {}}
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="primary" 
+              onClick={handleSave} 
+              loading={isPending}
+            >
+              Save
+            </Button>
+          </div>
         </div>
-        <div>
-          <label className="block mb-1">Last Name:</label>
-          <Input
-            name="last_name"
-            value={formData.last_name}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label className="block mb-1">Email:</label>
-          <Input
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mt-4 flex justify-end gap-4">
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="primary" onClick={handleSave} loading={isPending}>
-            Save
-          </Button>
-        </div>
-      </div>
-    </Drawer>
+      </Drawer>
+    </ConfigProvider>
   );
 };
 

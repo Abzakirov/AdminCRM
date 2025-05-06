@@ -72,9 +72,9 @@ const MainProfile = ({ user }: { user: UserType }) => {
   };
 
   return (
-    <div className="flex w-full justify-center p-6 bg-[#f9f9f9] dark:bg-gray-900 min-h-screen dark:shadow-[#1f1f1f]">
+    <div className="flex w-full justify-center p-4 sm:p-6 bg-[#f9f9f9] dark:bg-gray-900 min-h-screen dark:shadow-[#1f1f1f]">
       <div
-        className="w-full bg-white dark:bg-gray-900 rounded-lg shadow-2xl p-8 flex flex-col gap-6 border border-gray-100 dark:border-none"
+        className="w-full bg-white dark:bg-gray-900 rounded-lg shadow-2xl p-4 sm:p-8 flex flex-col gap-4 sm:gap-6 border border-gray-100 dark:border-none"
         style={{
           boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
           transition: "all 0.3s ease-in-out",
@@ -83,13 +83,13 @@ const MainProfile = ({ user }: { user: UserType }) => {
         <img
           src="/profile_img.svg"
           alt={currentUser.first_name}
-          className="w-full rounded-t-lg"
+          className="w-full rounded-t-lg h-[70px]"
         />
 
-        <div className="flex items-center justify-between ml-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 sm:ml-2">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-[50px] h-[50px] bg-blue-500 rounded-full font-medium text-white text-[18px] text-center dark:bg-white dark:text-black flex items-center justify-center overflow-hidden shadow-md">
+              <div className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] bg-blue-500 rounded-full font-medium text-white text-[16px] sm:text-[18px] text-center dark:bg-white dark:text-black flex items-center justify-center overflow-hidden shadow-md">
                 {currentUser?.image === "" ? (
                   currentUser.first_name.slice(0, 1)
                 ) : (
@@ -101,7 +101,7 @@ const MainProfile = ({ user }: { user: UserType }) => {
                 )}
               </div>
               <label className="absolute bottom-0 right-0 cursor-pointer bg-white rounded-full p-[2px] shadow-lg">
-                <Camera size={18} className="dark:text-black" />
+                <Camera size={16} className="dark:text-black" />
                 <input
                   type="file"
                   accept="image/*"
@@ -113,29 +113,29 @@ const MainProfile = ({ user }: { user: UserType }) => {
             </div>
 
             <div className="flex flex-col items-start">
-              <div className="flex items-center gap-2">
-                <h2 className="text-[18px] font-medium">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <h2 className="text-[16px] sm:text-[18px] font-medium">
                   {currentUser.first_name}
                 </h2>
-                <h2 className="text-[18px] font-medium">
+                <h2 className="text-[16px] sm:text-[18px] font-medium">
                   {currentUser.last_name}
                 </h2>
               </div>
-              <p className="text-[15px] opacity-[0.5]">{currentUser.email}</p>
+              <p className="text-[13px] sm:text-[15px] opacity-[0.5]">{currentUser.email}</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex  sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
             <Button
               type="primary"
               onClick={showDrawer}
-              className="shadow-md hover:shadow-lg"
+              className="shadow-md hover:shadow-lg w-full sm:w-auto"
             >
               Edit Profile
             </Button>
             <Button
               type="primary"
               onClick={showPasswordModal}
-              className="shadow-md hover:shadow-lg"
+              className="shadow-md hover:shadow-lg w-full sm:w-auto"
             >
               Edit Password
             </Button>
@@ -147,19 +147,19 @@ const MainProfile = ({ user }: { user: UserType }) => {
             type="default"
             onClick={handleImageUpload}
             loading={isPending}
-            className="w-[160px] ml-2 shadow-md hover:shadow-lg"
+            className="w-full sm:w-[160px] ml-0 sm:ml-2 shadow-md hover:shadow-lg"
           >
             Upload Image
           </Button>
         )}
 
-        <div >
+        <div>
           <ProfileForm user={currentUser} />
         </div>
 
-        <div className="p-4">
-          <h2 className="text-[18px] font-medium">My email Address:</h2>
-          <p className="text-[17px] opacity-[0.5]">{currentUser.email}</p>
+        <div className="p-2 sm:p-4">
+          <h2 className="text-[16px] sm:text-[18px] font-medium">My email Address:</h2>
+          <p className="text-[15px] sm:text-[17px] opacity-[0.5]">{currentUser.email}</p>
         </div>
       </div>
 

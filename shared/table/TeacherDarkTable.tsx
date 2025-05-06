@@ -3,14 +3,7 @@
 import { TeacherType } from "@/@types";
 import { axiosInstance } from "@/hooks/useAxios/useAxios";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Table,
-  Button,
-  Dropdown,
-  Modal,
-  ConfigProvider,
-  theme,
-} from "antd";
+import { Table, Button, Dropdown, Modal, ConfigProvider, theme } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { MoreOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
@@ -20,6 +13,7 @@ import {
 } from "@/hooks/mutation";
 import Cookies from "js-cookie";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 
 const TeacherDarkTable = () => {
   const { resolvedTheme } = useTheme();
@@ -32,16 +26,22 @@ const TeacherDarkTable = () => {
       return res.data.data;
     },
   });
+  console.log(data)
 
   const [teachers, setTeachers] = useState<TeacherType[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [teacherToDelete, setTeacherToDelete] = useState<TeacherType | null>(null);
+  const [teacherToDelete, setTeacherToDelete] = useState<TeacherType | null>(
+    null
+  );
   const [isReturnWorkModalOpen, setIsReturnWorkModalOpen] = useState(false);
-  const [teacherToReturnWork, setTeacherToReturnWork] = useState<TeacherType | null>(null);
+  const [teacherToReturnWork, setTeacherToReturnWork] =
+    useState<TeacherType | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
 
-  const { mutate: deleteTeacher, isPending: isDeleting } = useDeleteTeahcerMutation();
+  const { mutate: deleteTeacher, isPending: isDeleting } =
+    useDeleteTeahcerMutation();
   const { mutate: returnWork } = useReturnTeacherWorkMutation();
+  const router = useRouter();
 
   useEffect(() => {
     if (data) setTeachers(data);
@@ -268,6 +268,12 @@ const TeacherDarkTable = () => {
             }}
             className="[&_.ant-table-tbody>tr>td]:py-3 [&_.ant-table-thead>tr>th]:py-3"
             scroll={{ x: "max-content" }}
+            onRow={(record) => {
+              return {
+                onClick: () => router.push(`/teachers/${record._id}`),
+                style: { cursor: "pointer" },
+              };
+            }}
           />
         </div>
       </div>
@@ -327,7 +333,8 @@ const TeacherDarkTable = () => {
           <p className="text-gray-700 dark:text-gray-300">
             Siz rostdan ham{" "}
             <span className="font-bold dark:text-white">
-              {teacherToReturnWork.first_name} {teacherToReturnWork.last_name || ""}
+              {teacherToReturnWork.first_name}{" "}
+              {teacherToReturnWork.last_name || ""}
             </span>{" "}
             ni ishga qaytarmoqchimisiz?
           </p>

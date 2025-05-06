@@ -444,7 +444,7 @@ const AdminTable = () => {
       <Modal
         title={
           <div
-            style={{ display: "flex", alignItems: "center", color: "#faad14" }}
+            style={{ display: "flex", alignItems: "center", color: "blue" }}
           >
             <span style={{ fontSize: "18px", fontWeight: "bold" }}>
               Ta'tildan qaytarishni tasdiqlang

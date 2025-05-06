@@ -13,7 +13,7 @@ interface SidebarProps {
   isOpen: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+const Sidebars: React.FC<SidebarProps> = ({ isOpen }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -119,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
       <div className="mt-4">
         <Button
-          onClick={() => setIsModalOpen(true)}
+         onClick={() => setIsModalOpen(true)}
           className="!flex !items-center !gap-3 !justify-start !w-full !p-2 !border-none !text-red-600 dark:!text-red-400"
           type="text"
         >
@@ -140,4 +140,4 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   );
 };
 
-export default Sidebar;
+export default Sidebars;

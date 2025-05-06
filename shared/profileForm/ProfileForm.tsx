@@ -16,7 +16,7 @@ const ProfileForm = ({ user }: { user: UserType }) => {
   const handleLeave = () => setHovered(false);
 
   const inputClass =
-    "p-2 rounded border bg-[#f7f7f7] dark:bg-gray-800 text-black dark:text-white cursor-not-allowed opacity-60";
+    "p-2 rounded border bg-[#f7f7f7] dark:bg-gray-800 text-black dark:text-white cursor-not-allowed opacity-60 max-[568px]-w-full";
 
   return (
     <div
@@ -25,7 +25,7 @@ const ProfileForm = ({ user }: { user: UserType }) => {
     >
      
 
-      <form className="flex gap-5 w-full dark:shadow-[#1f1f1f] p-5 rounded bg-white dark:bg-gray-900">
+      <form className="flex gap-5 w-full dark:shadow-[#1f1f1f] p-5 rounded bg-white dark:bg-gray-900 max-[568px]:flex-col max-[568px]:flex max-[568px]:gap-3">
         <div className="flex-1 flex flex-col gap-5">
           <div className="flex flex-col" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
             <label className="mb-1 text-black dark:text-white">First Name:</label>

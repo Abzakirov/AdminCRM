@@ -15,6 +15,7 @@ import {
 } from "@/hooks/mutation";
 import Cookies from "js-cookie";
 import VacationModal from "../mod/VacationModal";
+import { useRouter } from "next/navigation";
 
 const AdminTableLight = () => {
   const { data, isLoading, refetch } = useQuery<AdminType[]>({
@@ -47,6 +48,7 @@ const AdminTableLight = () => {
   const { mutate: returnVacation, isPending: isReturningVacation } =
     useReturnVacationMutation();
   const { mutate: returnWork } = useReturnWorkMutation();
+  const router =useRouter()
 
   useEffect(() => {
     if (data) setAdmins(data);
@@ -243,6 +245,13 @@ const AdminTableLight = () => {
           loading={isLoading}
           rowKey={(record) => record._id}
           className="px-2"
+          scroll={{ x: "max-content" }}
+          onRow={(record) => {
+            return {
+              onClick: () => router.push(`/admins/${record._id}`),
+              style: { cursor: "pointer" },
+            };
+          }}
         />
       </div>
 

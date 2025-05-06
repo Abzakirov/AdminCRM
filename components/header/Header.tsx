@@ -11,7 +11,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   return (
-    <div className="flex items-center justify-between p-3 border-b w-full min-h-[60px]">
+    <div className="flex items-center justify-between p-3 border-b w-full min-h-[60px] max-[600px]:w-full">
       <div className="flex items-center gap-2">
         <button onClick={onToggleSidebar}>
           <SidebarIcon size={19} />
