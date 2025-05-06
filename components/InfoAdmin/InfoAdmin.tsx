@@ -1,24 +1,25 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { AdminType } from '@/@types';
-import { 
-  Card, 
-  Avatar, 
-  Descriptions, 
-  Spin, 
-  Divider, 
-  Row, 
-  Col, 
-  ConfigProvider, 
+import {
+  Card,
+  Avatar,
+  Descriptions,
+  Spin,
+  Divider,
+  Row,
+  Col,
+  ConfigProvider,
   theme,
   Timeline,
   Statistic,
   message
 } from 'antd';
-import { 
-  UserOutlined, 
-  MailOutlined, 
+import {
+  UserOutlined,
+  MailOutlined,
   CalendarOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
@@ -32,41 +33,31 @@ import { useTheme } from "next-themes";
 
 const { darkAlgorithm, defaultAlgorithm } = theme;
 
-const InfoAdmin = ({id}: {id: string}) => {
-  const [adminData, setAdminData] = useState<AdminType | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const { theme: nextTheme } = useTheme();
+const InfoAdmin = ({ id, initialData = null }: { id: string, initialData?: AdminType | null }) => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchAdminData = async () => {
-      setLoading(true);
-      try {
-        const response = await axiosInstance.get(`/staff/info/${id}`);
-        if (response.data && response.data.data) {
-          setAdminData(response.data.data);
-        } else {
-          setError("Ma'lumot topilmadi");
-        }
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Ma'lumotni yuklashda xatolik yuz berdi");
-        message.error("Ma'lumotni yuklashda xatolik yuz berdi");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchAdminData();
-    }
-  }, [id]);
+  const { theme: nextTheme } = useTheme();
 
   useEffect(() => {
     if (nextTheme) {
       setIsDarkMode(nextTheme === 'dark');
     }
   }, [nextTheme]);
+
+  // Fetch admin data using useQuery
+  const { data: adminData, isLoading, error } = useQuery({
+    queryKey: ['adminData', id],
+    queryFn: async () => {
+      const response = await axiosInstance.get(`/staff/info/${id}`);
+      if (response.data && response.data.data) {
+        return response.data.data as AdminType;
+      }
+      throw new Error("Ma'lumot topilmadi");
+    },
+    initialData: initialData || undefined, // Use SSR data if available
+    staleTime: 5 * 60 * 1000, // Data is fresh for 5 minutes
+    refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
+    refetchOnWindowFocus: true, // Refetch when window is focused
+  });
 
   const getStatusColor = (status: string) => {
     if (isDarkMode) {
@@ -92,13 +83,13 @@ const InfoAdmin = ({id}: {id: string}) => {
 
   const getActiveStatus = (active: boolean) => {
     if (isDarkMode) {
-      return active ? 
-        { color: "#52c41a", text: "Faol", icon: <CheckCircleOutlined /> } : 
-        { color: "#ff4d4f", text: "Faol emas", icon: <CloseCircleOutlined /> };
+      return active
+        ? { color: "#52c41a", text: "Faol", icon: <CheckCircleOutlined /> }
+        : { color: "#ff4d4f", text: "Faol emas", icon: <CloseCircleOutlined /> };
     } else {
-      return active ? 
-        { color: "#389e0d", text: "Faol", icon: <CheckCircleOutlined /> } : 
-        { color: "#cf1322", text: "Faol emas", icon: <CloseCircleOutlined /> };
+      return active
+        ? { color: "#389e0d", text: "Faol", icon: <CheckCircleOutlined /> }
+        : { color: "#cf1322", text: "Faol emas", icon: <CloseCircleOutlined /> };
     }
   };
 
@@ -153,7 +144,7 @@ const InfoAdmin = ({id}: {id: string}) => {
 
   const currentTheme = isDarkMode ? themeConfig.dark : themeConfig.light;
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <Spin size="large" />
@@ -163,26 +154,26 @@ const InfoAdmin = ({id}: {id: string}) => {
 
   if (error) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
         flexDirection: 'column',
         color: isDarkMode ? '#ff4d4f' : '#cf1322'
       }}>
         <h2>Xatolik</h2>
-        <p>{error}</p>
+        <p>{(error as any).message || "Ma'lumotni yuklashda xatolik yuz berdi"}</p>
       </div>
     );
   }
 
   if (!adminData) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
         flexDirection: 'column',
         color: isDarkMode ? '#ff4d4f' : '#cf1322'
@@ -195,7 +186,7 @@ const InfoAdmin = ({id}: {id: string}) => {
   const statusStyle = getStatusColor(adminData.status);
   const activeStatus = getActiveStatus(adminData.active);
   const roleStyle = getRoleColor(adminData.role);
-  
+
   const workStartDate = moment(adminData.work_date);
   const currentDate = moment();
   const workDuration = moment.duration(currentDate.diff(workStartDate));
@@ -232,47 +223,46 @@ const InfoAdmin = ({id}: {id: string}) => {
         },
       }}
     >
-      <div style={{ 
-        padding: '20px', 
-        backgroundColor: currentTheme.bgPage, 
+      <div style={{
+        padding: '20px',
+        backgroundColor: currentTheme.bgPage,
         minHeight: '100vh',
         transition: 'all 0.3s ease'
       }}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'flex-end', 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
           marginBottom: '16px',
           alignItems: 'center'
-        }}>
-        </div>
+        }}></div>
         <Row gutter={[16, 16]}>
           <Col xs={24} md={8}>
-            <Card 
-              style={{ 
-                backgroundColor: currentTheme.bgContainer, 
+            <Card
+              style={{
+                backgroundColor: currentTheme.bgContainer,
                 boxShadow: currentTheme.cardShadow,
                 borderRadius: '8px',
                 border: `1px solid ${currentTheme.borderColor}`,
               }}
             >
-              <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                textAlign: 'center' 
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center'
               }}>
                 {adminData.image ? (
-                  <Avatar 
-                    src={adminData.image} 
-                    size={120} 
+                  <Avatar
+                    src={adminData.image}
+                    size={120}
                     style={{ marginBottom: '16px', border: `4px solid ${currentTheme.borderColor}` }}
                   />
                 ) : (
-                  <Avatar 
-                    icon={<UserOutlined />} 
-                    size={120} 
-                    style={{ 
-                      marginBottom: '16px', 
+                  <Avatar
+                    icon={<UserOutlined />}
+                    size={120}
+                    style={{
+                      marginBottom: '16px',
                       backgroundColor: currentTheme.accentColor,
                       border: `4px solid ${currentTheme.borderColor}`
                     }}
@@ -281,24 +271,24 @@ const InfoAdmin = ({id}: {id: string}) => {
                 <h2 style={{ color: currentTheme.textColor, marginBottom: '4px' }}>
                   {adminData.first_name} {adminData.last_name}
                 </h2>
-                <div style={{ 
-                  display: 'inline-block', 
-                  padding: '4px 12px', 
-                  borderRadius: '20px', 
-                  fontSize: '14px', 
-                  fontWeight: 500, 
-                  textTransform: 'capitalize', 
-                  color: roleStyle.color, 
-                  backgroundColor: roleStyle.bg, 
-                  border: `1px solid ${roleStyle.color}`, 
+                <div style={{
+                  display: 'inline-block',
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  textTransform: 'capitalize',
+                  color: roleStyle.color,
+                  backgroundColor: roleStyle.bg,
+                  border: `1px solid ${roleStyle.color}`,
                   boxShadow: `0 0 8px ${roleStyle.bg}`,
-                  marginBottom: '16px' 
+                  marginBottom: '16px'
                 }}>
                   {adminData.role}
                 </div>
-                <p style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
+                <p style={{
+                  display: 'flex',
+                  alignItems: 'center',
                   color: currentTheme.textSecondary,
                   marginBottom: '8px'
                 }}>
@@ -306,22 +296,22 @@ const InfoAdmin = ({id}: {id: string}) => {
                   {adminData.email}
                 </p>
                 <Divider style={{ borderColor: currentTheme.borderColor, margin: '16px 0' }} />
-                <div style={{ 
-                  display: 'flex', 
-                  width: '100%', 
-                  justifyContent: 'space-around' 
+                <div style={{
+                  display: 'flex',
+                  width: '100%',
+                  justifyContent: 'space-around'
                 }}>
                   <div>
-                    <div style={{ 
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center', 
-                      color: activeStatus.color, 
-                      backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)', 
-                      borderRadius: '50%', 
-                      width: '40px', 
-                      height: '40px', 
-                      marginBottom: '8px' 
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: activeStatus.color,
+                      backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)',
+                      borderRadius: '50%',
+                      width: '40px',
+                      height: '40px',
+                      marginBottom: '8px'
                     }}>
                       {activeStatus.icon}
                     </div>
@@ -330,16 +320,16 @@ const InfoAdmin = ({id}: {id: string}) => {
                     </div>
                   </div>
                   <div>
-                    <div style={{ 
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center', 
-                      color: statusStyle.color, 
-                      backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)', 
-                      borderRadius: '50%', 
-                      width: '40px', 
-                      height: '40px', 
-                      marginBottom: '8px' 
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: statusStyle.color,
+                      backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)',
+                      borderRadius: '50%',
+                      width: '40px',
+                      height: '40px',
+                      marginBottom: '8px'
                     }}>
                       <ClockCircleOutlined />
                     </div>
@@ -348,16 +338,16 @@ const InfoAdmin = ({id}: {id: string}) => {
                     </div>
                   </div>
                   <div>
-                    <div style={{ 
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center', 
-                      color: currentTheme.accentColor, 
-                      backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)', 
-                      borderRadius: '50%', 
-                      width: '40px', 
-                      height: '40px', 
-                      marginBottom: '8px' 
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: currentTheme.accentColor,
+                      backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)',
+                      borderRadius: '50%',
+                      width: '40px',
+                      height: '40px',
+                      marginBottom: '8px'
                     }}>
                       <TeamOutlined />
                     </div>
@@ -368,27 +358,26 @@ const InfoAdmin = ({id}: {id: string}) => {
                 </div>
               </div>
             </Card>
-            
-            <Card 
-              title="Ish tajribasi" 
-              style={{ 
-                backgroundColor: currentTheme.bgContainer, 
+            <Card
+              title="Ish tajribasi"
+              style={{
+                backgroundColor: currentTheme.bgContainer,
                 boxShadow: currentTheme.cardShadow,
                 borderRadius: '8px',
                 border: `1px solid ${currentTheme.borderColor}`,
                 marginTop: '16px'
               }}
-              headStyle={{ 
-                borderBottom: `1px solid ${currentTheme.borderColor}`, 
-                color: currentTheme.textSecondary, 
-                fontWeight: 600 
+              headStyle={{
+                borderBottom: `1px solid ${currentTheme.borderColor}`,
+                color: currentTheme.textSecondary,
+                fontWeight: 600
               }}
             >
               <Row gutter={[16, 16]}>
                 <Col span={24}>
-                  <Statistic 
-                    title="Ish tajribasi" 
-                    value={workDurationText} 
+                  <Statistic
+                    title="Ish tajribasi"
+                    value={workDurationText}
                     valueStyle={{ color: currentTheme.accentColor }}
                     prefix={<TrophyOutlined />}
                   />
@@ -417,7 +406,7 @@ const InfoAdmin = ({id}: {id: string}) => {
                       )
                     }
                   ] : []),
-                  ...(adminData.leave_history && adminData.leave_history.length > 0 ? 
+                  ...(adminData.leave_history && adminData.leave_history.length > 0 ?
                     adminData.leave_history.map((leave: any, index: number) => ({
                       color: isDarkMode ? '#faad14' : '#d48806',
                       children: (
@@ -435,20 +424,19 @@ const InfoAdmin = ({id}: {id: string}) => {
               />
             </Card>
           </Col>
-          
           <Col xs={24} md={16}>
             <Card
               title="Admin ma'lumotlari"
-              style={{ 
-                backgroundColor: currentTheme.bgContainer, 
+              style={{
+                backgroundColor: currentTheme.bgContainer,
                 boxShadow: currentTheme.cardShadow,
                 borderRadius: '8px',
                 border: `1px solid ${currentTheme.borderColor}`,
               }}
-              headStyle={{ 
-                borderBottom: `1px solid ${currentTheme.borderColor}`, 
-                color: currentTheme.textSecondary, 
-                fontWeight: 600 
+              headStyle={{
+                borderBottom: `1px solid ${currentTheme.borderColor}`,
+                color: currentTheme.textSecondary,
+                fontWeight: 600
               }}
             >
               <Descriptions
@@ -457,7 +445,7 @@ const InfoAdmin = ({id}: {id: string}) => {
                 size="middle"
                 labelStyle={{ color: currentTheme.textTertiary }}
                 contentStyle={{ color: currentTheme.textColor }}
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.bgContainer,
                 }}
               >
@@ -532,26 +520,25 @@ const InfoAdmin = ({id}: {id: string}) => {
                 </Descriptions.Item>
               </Descriptions>
             </Card>
-
             {adminData.leave_history && adminData.leave_history.length > 0 && (
               <Card
                 title="Ta'til tarixi"
-                style={{ 
-                  backgroundColor: currentTheme.bgContainer, 
+                style={{
+                  backgroundColor: currentTheme.bgContainer,
                   boxShadow: currentTheme.cardShadow,
                   borderRadius: '8px',
                   border: `1px solid ${currentTheme.borderColor}`,
                   marginTop: '16px'
                 }}
-                headStyle={{ 
-                  borderBottom: `1px solid ${currentTheme.borderColor}`, 
-                  color: currentTheme.textSecondary, 
-                  fontWeight: 600 
+                headStyle={{
+                  borderBottom: `1px solid ${currentTheme.borderColor}`,
+                  color: currentTheme.textSecondary,
+                  fontWeight: 600
                 }}
               >
                 {adminData.leave_history.map((leave: any, index: number) => (
-                  <div key={index} style={{ 
-                    padding: '12px', 
+                  <div key={index} style={{
+                    padding: '12px',
                     border: `1px solid ${currentTheme.borderColor}`,
                     borderRadius: '8px',
                     marginBottom: index < adminData.leave_history.length - 1 ? '12px' : 0,
@@ -560,10 +547,10 @@ const InfoAdmin = ({id}: {id: string}) => {
                     <Row gutter={[16, 16]}>
                       <Col xs={24} md={12}>
                         <div style={{ color: currentTheme.textTertiary }}>Boshlanish sanasi:</div>
-                        <div style={{ 
-                          color: currentTheme.textColor, 
-                          display: 'flex', 
-                          alignItems: 'center' 
+                        <div style={{
+                          color: currentTheme.textColor,
+                          display: 'flex',
+                          alignItems: 'center'
                         }}>
                           <CalendarOutlined style={{ marginRight: '8px', color: isDarkMode ? '#faad14' : '#d48806' }} />
                           {moment(leave.start_date).format('DD.MM.YYYY')}
@@ -571,10 +558,10 @@ const InfoAdmin = ({id}: {id: string}) => {
                       </Col>
                       <Col xs={24} md={12}>
                         <div style={{ color: currentTheme.textTertiary }}>Tugash sanasi:</div>
-                        <div style={{ 
-                          color: currentTheme.textColor, 
-                          display: 'flex', 
-                          alignItems: 'center' 
+                        <div style={{
+                          color: currentTheme.textColor,
+                          display: 'flex',
+                          alignItems: 'center'
                         }}>
                           <CalendarOutlined style={{ marginRight: '8px', color: isDarkMode ? '#52c41a' : '#389e0d' }} />
                           {moment(leave.end_date).format('DD.MM.YYYY')}

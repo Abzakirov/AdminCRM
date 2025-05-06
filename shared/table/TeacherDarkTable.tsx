@@ -188,6 +188,7 @@ const TeacherDarkTable = () => {
               backgroundColor: `${color}20`,
               border: `1px solid ${color}`,
               boxShadow: `${color}33 0px 0px 8px`,
+              textTransform: "capitalize",
             }}
           >
             {status}
