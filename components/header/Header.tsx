@@ -20,9 +20,11 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
       </div>
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-3">
-          <Bell size={23} className="cursor-pointer" />
+        <div className="flex items-center gap-3 max-[380px]:hidden">
+        <Bell size={23} className="cursor-pointer" />
           <MessageCircleMore size={23} className="cursor-pointer" />
           <Megaphone size={23} className="cursor-pointer" />
+        </div>
           <DarkMode />
         </div>
         <ProfilesServer />

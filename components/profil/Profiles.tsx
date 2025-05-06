@@ -9,7 +9,7 @@ const ProfilesClient: React.FC<ProfilesClientProps> = ({ user }) => {
 
   return (
     <div className="flex items-center gap-2">
-      <div className="!text-[14px]">
+      <div className="!text-[14px] max-[670px]:hidden">
         <div className="flex items-center gap-2">
           <h2>{user.first_name}</h2>
           <h2>{user.last_name}</h2>
