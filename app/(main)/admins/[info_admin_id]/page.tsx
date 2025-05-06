@@ -1,7 +1,7 @@
 import { axiosInstance } from '@/hooks/useAxios/useAxios';
 import InfoAdmin from '@/components/InfoAdmin/InfoAdmin';
 
-async function getAdminData(id:string) {
+async function getAdminData(id: string) {
   try {
     const response = await axiosInstance.get(`/staff/info/${id}`);
     if (response.data && response.data.data) {
