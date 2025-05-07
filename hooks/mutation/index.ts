@@ -339,3 +339,71 @@ export const useStudentCreateMutation=()=>{
 }
 
 
+
+
+
+export const useDeleteStudentMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["delete-student"],
+    mutationFn: async (_id: string) => {
+      const response = await axiosInstance.delete(`/student/delete-student`, { data: { _id } });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      showSuccessToast("O'quvchi muvaffaqiyatli o‘chirildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "O‘qituvchini o‘chirishda xatolik!");
+    },
+  });
+};
+
+
+export const useVacationCreateStudentMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["create-vacation-student"],
+    mutationFn: async (data: VacationType) => {
+      const response = await axiosInstance.post("/student/leave-student", data);
+      return response.data.data;
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["vacations-student"] });
+      try {
+        const res = await axiosInstance.get("/student/get-all-students");
+        queryClient.setQueryData(["students"], res.data.data);
+      } catch (error) {
+        showErrorToast("Ta’til yaratilgandan so‘ng adminlar ro‘yxatini olishda xatolik yuz berdi.");
+      }
+      showSuccessToast("O'quvchi  Ta’tilga  muvaffaqiyatli Chiqildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "Ta’til yaratishda xatolik!");
+    },
+  });
+};
+
+
+
+export const useReturnVacationStudentMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["return-vacation"],
+    mutationFn: async (student_id: string) => {
+      const response = await axiosInstance.post(`/student/return-leave-student`, { student_id });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      showSuccessToast("O'quvchi ta’tildan muvaffaqiyatli qaytdi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "Ta’tildan qaytishda xatolik!");
+    },
+  });
+};

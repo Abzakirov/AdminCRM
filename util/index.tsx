@@ -21,42 +21,42 @@ export const sidebarMenu: SidebarMenuType[] = [
     title: "Asosiy",
     path: "/",
     Icons: LayoutGrid,
-    roles: ["admin", "manager", "teacher", "student"],
+    roles: ["admin", "manager", "teacher", "student","raxbar"],
   },
   {
     id: 2,
     title: "Manajerlar",
     path: "/managers",
     Icons: ShieldUser,
-    roles: ["manager"],
+    roles: ["manager","raxbar"],
   },
   {
     id: 3,
     title: "Adminlar",
     path: "/admins",
     Icons: ContactRound,
-    roles: ["admin", "manager"],
+    roles: ["admin", "manager","raxbar"],
   },
   {
     id: 4,
     title: "O'qituvchilar",
     path: "/teachers",
     Icons: UserRoundPen,
-    roles: ["admin", "manager"],
+    roles: ["admin", "manager","raxbar"],
   },
   {
     id: 5,
     title: "O'quvchilar",
     path: "/students",
     Icons: Users,
-    roles: ["admin", "manager", "teacher"],
+    roles: ["admin", "manager", "teacher","raxbar"],
   },
   {
     id: 6,
     title: "Groups",
     path: "/groups",
     Icons: Component,
-    roles: ["admin", "manager", "teacher"],
+    roles: ["admin", "manager", "teacher","raxbar"],
   },
 ];
 
@@ -65,20 +65,20 @@ export const ButtomsidebarMenu: ButtomsidebarMenuType[] = [
     id: 1,
     path: "/",
     Icons: LayoutGrid,
-    roles: ["admin", "manager", "teacher", "student"],
+    roles: ["admin", "manager", "teacher", "student","raxbar"],
   },
 
   {
     id: 2,
     path: "/settings",
     Icons: Settings,
-    roles: ["admin", "manager", "teacher", "student"],
+    roles: ["admin", "manager", "teacher", "student","raxbar"],
   },
   {
     id: 3,
     path: "/profile",
     Icons: CircleUserRound,
-    roles: ["admin", "manager", "teacher", "student"],
+    roles: ["admin", "manager", "teacher", "student","raxbar"],
   },
 ];
 
@@ -87,7 +87,7 @@ export const MenuData: MenuDataType[] = [
     id: 1,
     path: "/managers",
     Icons: ShieldUser,
-    roles: ["manager"],
+    roles: ["manager","raxbar"],
     title: "Manajerlar",
   },
   {
@@ -95,28 +95,28 @@ export const MenuData: MenuDataType[] = [
     path: "/admins",
     title: "Adminlar",
     Icons: ContactRound,
-    roles: ["admin", "manager"],
+    roles: ["admin", "manager","raxbar"],
   },
   {
     id: 3,
     path: "/teachers",
     Icons: UserRoundPen,
     title: "O'qituvchilar",
-    roles: ["admin", "manager"],
+    roles: ["admin", "manager","raxbar"],
   },
   {
     id: 4,
     path: "/students",
     title: "O'quvchilar",
     Icons: Users,
-    roles: ["admin", "manager", "teacher"],
+    roles: ["admin", "manager", "teacher","raxbar"],
   },
   {
     id: 5,
     path: "/groups",
     title: "Groups",
     Icons: Component,
-    roles: ["admin", "manager", "teacher"],
+    roles: ["admin", "manager", "teacher","raxbar"],
   },
 ];
 export const others_menu: SidebarMenuType[] = [
@@ -125,14 +125,14 @@ export const others_menu: SidebarMenuType[] = [
     title: "Sozlamalar",
     path: "/settings",
     Icons: Settings,
-    roles: ["admin", "manager", "teacher", "student"],
+    roles: ["admin", "manager", "teacher", "student","raxbar"],
   },
   {
     id: 2,
     title: "Profil",
     path: "/profile",
     Icons: CircleUserRound,
-    roles: ["admin", "manager", "teacher", "student"],
+    roles: ["admin", "manager", "teacher", "student","raxbar"],
   },
 ];
 

@@ -122,14 +122,29 @@ export interface AdminType {
   work_end: string | null;
 }
 
+
+export type StudentUserType = {
+  _id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  image: string;
+  role: string;
+  status: string;
+  active: boolean;
+  is_deleted: boolean;
+  work_date: string;
+  work_end: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+
 export interface LeaveType {
   _id: string;
   start_date: string;
   end_date: string;
   reason: string;
-}
-export interface GroupType{
-  
 }
 export type AdminUserType = {
   _id: string;
@@ -197,3 +212,56 @@ export interface TeacherType {
   updatedAt: string;
   groups: string[];
 }
+
+
+export type StudentType = {
+  _id: string;
+  first_name: string;
+  last_name: string;
+  status: string;
+  is_deleted: boolean;
+  phone: string;
+  createdAt: string;
+  updatedAt: string;
+  leave_history: any[];
+  groups: any[];
+  teacher: string};
+
+
+
+
+export type GroupType = {
+  _id: string;
+  name: string;
+};
+
+
+export interface LeaveHistoryType{
+  _id: string;
+  start_date: string;
+  end_date: string;
+  reason: string;
+  days:number
+}
+
+export type GroupStudentEntry = {
+  exitedAt: string;
+  joinedAt: string;
+  payments: any[]; 
+  status: string; 
+  group: {
+    _id: string;
+    name: string;
+    teacher: string;
+    students: string[]; 
+    started_group: string;
+    end_group: string;
+    createdAt: string;
+    updatedAt: string;
+    disable: boolean;
+    is_deleted: boolean;
+  };
+};
+
+
+
