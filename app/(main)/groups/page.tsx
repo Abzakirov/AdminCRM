@@ -1,9 +1,9 @@
-import React from 'react'
+import GroupComponent from '@/components/group/Group'
 
 const Group = () => {
   return (
     <div>
-      Group
+      <GroupComponent/>
     </div>
   )
 }

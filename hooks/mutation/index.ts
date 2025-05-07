@@ -12,6 +12,7 @@ import type {
   EditAdminType,
   EditPasswordType,
   EditProfileImageType,
+  searchGroupType,
   UserType,
   VacationType,
 } from "@/@types";
@@ -319,3 +320,22 @@ export const useReturnTeacherWorkMutation = () => {
     },
   });
 };
+
+
+export const useStudentCreateMutation=()=>{
+  return useMutation({
+    mutationKey: ["create-student"],
+    mutationFn: async (data: AdminUserType) => {
+      const response = await axiosInstance.post("/student/create-student", data);
+      return response.data.data;
+    },
+    onSuccess: () => {
+      showSuccessToast("O'quvchi muvaffaqiyatli yaratildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "O'quvchi yaratishda xatolik!");
+    },
+  })
+}
+
+

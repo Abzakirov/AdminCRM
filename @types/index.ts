@@ -61,7 +61,7 @@ export interface MenuDataType {
   path: string;
   Icons: LucideIcon;
   roles?: string[];
-  title:string
+  title: string;
 }
 
 export interface BrandCrumpType {
@@ -116,11 +116,21 @@ export interface AdminType {
   createdAt: string;
   updatedAt: string;
   is_deleted: boolean;
-  leave_history: any[];
+  leave_history?: LeaveType[];
+
   work_date: string;
   work_end: string | null;
 }
 
+export interface LeaveType {
+  _id: string;
+  start_date: string;
+  end_date: string;
+  reason: string;
+}
+export interface GroupType{
+  
+}
 export type AdminUserType = {
   _id: string;
   email: string;
@@ -136,6 +146,11 @@ export type AdminUserType = {
   createdAt: string;
   updatedAt: string;
 };
+
+export interface searchGroupType {
+  _id: string;
+  name: string;
+}
 
 export interface EditAdminType {
   _id: string;

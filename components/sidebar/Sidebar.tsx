@@ -8,6 +8,7 @@ import { LogOut } from "lucide-react";
 import Cookie from "js-cookie";
 import { showSuccessToast } from "@/shared/toast/Toast";
 import LogOutModal from "@/shared/mod/LogOutModal";
+import Image from "next/image";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -55,7 +56,7 @@ const Sidebars: React.FC<SidebarProps> = ({ isOpen }) => {
     title: string,
     items: typeof sidebarMenu | typeof others_menu
   ) => (
-    <div className="mt-5 ">
+    <div className="mt-5">
       <h2 className="text-lg font-semibold dark:text-white">{title}</h2>
       <div className="flex flex-col gap-3 mt-4">
         {items.map(({ Icons, id, title, path }) => {
@@ -99,17 +100,23 @@ const Sidebars: React.FC<SidebarProps> = ({ isOpen }) => {
     >
       <div className="flex justify-center items-center">
         <div className="dark:hidden flex items-center">
-          <img
-            className="w-[100px] h-[100px] object-contain"
+          <Image
             src="/logoLight.png"
             alt="Logo"
+            width={100}
+            height={100}
+            className="object-contain"
+            priority
           />
         </div>
         <div className="hidden dark:flex items-center">
-          <img
-            className="w-[100px] h-[100px] object-contain"
+          <Image
             src="/LogoDark.png"
             alt="Logo"
+            width={100}
+            height={100}
+            className="object-contain"
+            priority
           />
         </div>
       </div>
@@ -119,7 +126,7 @@ const Sidebars: React.FC<SidebarProps> = ({ isOpen }) => {
 
       <div className="mt-4">
         <Button
-         onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsModalOpen(true)}
           className="!flex !items-center !gap-3 !justify-start !w-full !p-2 !border-none !text-red-600 dark:!text-red-400"
           type="text"
         >

@@ -1,9 +1,10 @@
+import StudentComponent from '@/components/student/StudentComponent'
 import React from 'react'
 
 const Students = () => {
   return (
     <div>
-      Students
+      <StudentComponent/>
     </div>
   )
 }

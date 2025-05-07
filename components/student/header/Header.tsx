@@ -1,11 +1,11 @@
 'use client';
 
-import OpenDrawerTeacherButton from "@/components/openDrawerButton/OpenDrawerTeacherButton";
-import AddTeacherDrawer from "@/shared/addTeacherDrawe/AddTeahcerDrawer";
+import OpenStudentDrawer from "@/components/openDrawerButton/OpenStudentButton";
+import CreateStudent from "@/shared/createStudent/CreateStudent";
 import { Input } from "antd";
 import { useState } from "react";
 
-const TeacherHeader: React.FC = () => {
+const StudentHeader: React.FC = () => {
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
 
   const showDrawer = (): void => {
@@ -19,7 +19,7 @@ const TeacherHeader: React.FC = () => {
   return (
     <div className="flex items-center justify-between p-3">
       <div>
-        <h2 className="text-[18px] font-medium">O&#39;qituvchilar ro&#39;yxati:</h2>
+        <h2 className="text-[18px] font-medium">O'quvchilar royhati</h2>
       </div>
       <div className="flex items-center gap-3">
         <Input
@@ -27,11 +27,11 @@ const TeacherHeader: React.FC = () => {
           placeholder="Search Administrative authorities"
           className="!w-[270px]"
         />
-        <OpenDrawerTeacherButton showDrawer={showDrawer} />
-        <AddTeacherDrawer visible={drawerVisible} onClose={closeDrawer} />
+        <OpenStudentDrawer showDrawer={showDrawer} />
+        <CreateStudent visible={drawerVisible} onClose={closeDrawer} />
       </div>
     </div>
   );
 };
 
-export default TeacherHeader;
+export default StudentHeader;

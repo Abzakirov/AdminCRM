@@ -9,6 +9,7 @@ import { Camera } from "lucide-react";
 import { useEditProfileImgMutation } from "@/hooks/mutation";
 import { UserType } from "@/@types";
 import EditPassword from "@/shared/mod/EditPassword";
+import Image from "next/image";
 
 const MainProfile = ({ user }: { user: UserType }) => {
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -17,7 +18,7 @@ const MainProfile = ({ user }: { user: UserType }) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(
     user.image ||
-      "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
+    "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
   );
 
   const { mutate, isPending } = useEditProfileImgMutation();
@@ -80,10 +81,12 @@ const MainProfile = ({ user }: { user: UserType }) => {
           transition: "all 0.3s ease-in-out",
         }}
       >
-        <img
+        <Image
           src="/profile_img.svg"
           alt={currentUser.first_name}
-          className="w-full rounded-t-lg h-[70px]"
+          width={800}
+          height={100}
+          className="w-full rounded-t-lg h-[70px] object-cover"
         />
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 sm:ml-2">
@@ -93,9 +96,11 @@ const MainProfile = ({ user }: { user: UserType }) => {
                 {currentUser?.image === "" ? (
                   currentUser.first_name.slice(0, 1)
                 ) : (
-                  <img
+                  <Image
                     src={imagePreview}
                     alt={currentUser.first_name}
+                    width={50}
+                    height={50}
                     className="rounded-full object-cover w-full h-full"
                   />
                 )}
@@ -121,10 +126,13 @@ const MainProfile = ({ user }: { user: UserType }) => {
                   {currentUser.last_name}
                 </h2>
               </div>
-              <p className="text-[13px] sm:text-[15px] opacity-[0.5]">{currentUser.email}</p>
+              <p className="text-[13px] sm:text-[15px] opacity-[0.5]">
+                {currentUser.email}
+              </p>
             </div>
           </div>
-          <div className="flex  sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+
+          <div className="flex sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
             <Button
               type="primary"
               onClick={showDrawer}
@@ -159,7 +167,9 @@ const MainProfile = ({ user }: { user: UserType }) => {
 
         <div className="p-2 sm:p-4">
           <h2 className="text-[16px] sm:text-[18px] font-medium">My email Address:</h2>
-          <p className="text-[15px] sm:text-[17px] opacity-[0.5]">{currentUser.email}</p>
+          <p className="text-[15px] sm:text-[17px] opacity-[0.5]">
+            {currentUser.email}
+          </p>
         </div>
       </div>
 
