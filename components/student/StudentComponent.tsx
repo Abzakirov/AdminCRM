@@ -1,11 +1,11 @@
-import StudentLightTable from "@/shared/table/StudentLightTable";
 import StudentHeader from "./header/Header";
+import StudentClient from "../studentClient/StudentCilent";
 
 const StudentComponent = () => {
   return (
     <div>
       <StudentHeader />
-      <StudentLightTable />
+      <StudentClient />
     </div>
   );
 };

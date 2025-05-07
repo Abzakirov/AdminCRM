@@ -13,6 +13,7 @@ import type {
   EditPasswordType,
   EditProfileImageType,
   searchGroupType,
+  StudentVacationType,
   UserType,
   VacationType,
 } from "@/@types";
@@ -367,7 +368,7 @@ export const useVacationCreateStudentMutation = () => {
 
   return useMutation({
     mutationKey: ["create-vacation-student"],
-    mutationFn: async (data: VacationType) => {
+    mutationFn: async (data: StudentVacationType) => {
       const response = await axiosInstance.post("/student/leave-student", data);
       return response.data.data;
     },
@@ -404,6 +405,26 @@ export const useReturnVacationStudentMutation = () => {
     },
     onError: (error: any) => {
       showErrorToast(error?.response?.data?.message || "Ta’tildan qaytishda xatolik!");
+    },
+  });
+};
+
+
+export const useReturnStudentWorkMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["return-work"],
+    mutationFn: async (_id: string) => {
+      const response = await axiosInstance.post(`/student/return-student`, { _id });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teachers"] });
+      showSuccessToast("O'quvchi o'qishga muvaffaqiyatli qaytarildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "Ishga qaytishda xatolik!");
     },
   });
 };
