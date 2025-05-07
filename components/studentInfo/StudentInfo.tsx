@@ -445,7 +445,7 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
                     {leave.reason && (
                       <>
                         <Divider style={{ borderColor: currentTheme.borderColor, margin: '12px 0' }} />
-                        <div style={{ color: currentTheme.textTertiary }}>Sabab:</div>
+                        <div style={{ color: currentTheme.textTertiary }}>Sababs:</div>
                         <div style={{ color: currentTheme.textColor }}>{leave.reason}</div>
                       </>
                     )}
