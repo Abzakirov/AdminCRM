@@ -9,7 +9,7 @@ interface Props {
   showDrawer: () => void;
 }
 
-const OpenDrawerTeacherButton: React.FC<Props> = ({ showDrawer }) => {
+const OpenCourseDrawer: React.FC<Props> = ({ showDrawer }) => {
   const [user, setUser] = useState<{ role: string } | null>(null);
 
   useEffect(() => {
@@ -36,9 +36,9 @@ const OpenDrawerTeacherButton: React.FC<Props> = ({ showDrawer }) => {
 
   return (
     <Button type="primary" onClick={handleClick}>
-      Create Teacher
+      Kurs yaratish
     </Button>
   );
 };
 
-export default OpenDrawerTeacherButton;
+export default OpenCourseDrawer;

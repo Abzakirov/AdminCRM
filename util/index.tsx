@@ -8,6 +8,7 @@ import {
   CircleUserRound,
   Component,
   ContactRound,
+  GraduationCap,
   LayoutGrid,
   Settings,
   ShieldUser,
@@ -56,6 +57,13 @@ export const sidebarMenu: SidebarMenuType[] = [
     title: "Groups",
     path: "/groups",
     Icons: Component,
+    roles: ["admin", "manager", "teacher","raxbar"],
+  },
+  {
+    id: 7,
+    title: "Courses",
+    path: "/courses",
+    Icons: GraduationCap,
     roles: ["admin", "manager", "teacher","raxbar"],
   },
 ];
@@ -118,6 +126,13 @@ export const MenuData: MenuDataType[] = [
     Icons: Component,
     roles: ["admin", "manager", "teacher","raxbar"],
   },
+  {
+    id: 6,
+    path: "/courses",
+    title: "Courses",
+    Icons: GraduationCap,
+    roles: ["admin", "manager", "teacher","raxbar"],
+  },
 ];
 export const others_menu: SidebarMenuType[] = [
   {
@@ -176,5 +191,10 @@ export const BrandCrump: BrandCrumpType[] = [
     id: 8,
     title: "Profile",
     path: "/profile",
+  },
+  {
+    id: 9,
+    title: "Courses",
+    path: "/courses",
   },
 ];

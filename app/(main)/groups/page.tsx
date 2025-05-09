@@ -2,7 +2,7 @@ import GroupComponent from '@/components/group/Group'
 
 const Group = () => {
   return (
-    <div>
+    <div className='mt-4'>
       <GroupComponent/>
     </div>
   )

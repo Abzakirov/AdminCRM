@@ -230,6 +230,13 @@ export type GroupType = {
   name: string;
 };
 
+export interface GroupsType {
+  name: string;
+  teacher: string;
+  started_group: string;
+  price: number;
+}
+
 export interface LeaveHistoryType {
   _id: string;
   start_date: string;
@@ -261,4 +268,19 @@ export interface StudentVacationType {
   student_id: string;
   leave_days: number;
   reason: string;
+}
+
+export interface EditEndGroupType{
+  _id: string;
+  date?: string
+}
+
+
+export interface EditPriceGroupType{
+  group_id: string;
+  price?: number
+}
+
+export interface CreateCategorytype{
+  name: string;
 }

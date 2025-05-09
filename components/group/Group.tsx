@@ -1,9 +1,14 @@
-import React from 'react'
+import React from "react";
+import GroupClient from "../groupClient/GroupClient";
+import GroupHeader from "./header/Header";
 
 const GroupComponent = () => {
   return (
-    <div>GroupComponent</div>
-  )
-}
+    <div>
+      <GroupHeader />
+      <GroupClient />
+    </div>
+  );
+};
 
-export default GroupComponent
+export default GroupComponent;

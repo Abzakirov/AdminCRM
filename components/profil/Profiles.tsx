@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
 import { UserType } from "@/@types";
-import Image from 'next/image';
 
 interface ProfilesClientProps {
-  user: UserType | null;  
+  user: UserType | null;
 }
 
 const ProfilesClient: React.FC<ProfilesClientProps> = ({ user }) => {
@@ -26,12 +25,10 @@ const ProfilesClient: React.FC<ProfilesClientProps> = ({ user }) => {
       </div>
       <div className="w-[40px] h-[40px] bg-gray-300 rounded-full text-white text-[18px] text-center dark:bg-white dark:text-black flex items-center justify-center overflow-hidden">
         {user.image ? (
-          <Image
-            src={user.image}
-            alt={user.first_name}
-            width={40}
-            height={40}
-            className="rounded-full object-cover"
+          <img
+            src={user?.image}
+            alt={user?.first_name}
+            className="rounded-full object-cover w-[40px] h-[40px] "
           />
         ) : (
           initials

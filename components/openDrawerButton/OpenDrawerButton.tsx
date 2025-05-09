@@ -25,7 +25,7 @@ const OpenDrawerButton: React.FC<Props> = ({ showDrawer }) => {
   }, []);
 
   const handleClick = () => {
-    if (user?.role === "manager") {
+    if (user?.role === "manager"&&"raxbar") {
       showDrawer();
     } else {
       showErrorToast("Faqat Manager bo‘lishingiz kerak");
