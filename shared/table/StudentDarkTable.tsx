@@ -60,7 +60,7 @@ const StudentDarkTable = () => {
   const { mutate: returnWork } = useReturnStudentWorkMutation();
 
   useEffect(() => {
-    if (studentsData) setStudents(studentsData);
+    if (studentsData) setStudents(studentsData.reverse());
     const user = Cookies.get("user");
     if (user) {
       try {

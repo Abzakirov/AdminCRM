@@ -8,9 +8,11 @@ import {
   Spin,
   theme,
 } from "antd";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTeacherCreateMutation } from "@/hooks/mutation";
 import { useTheme } from "next-themes";
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "@/hooks/useAxios/useAxios";
 
 interface AddTeacherDrawerProps {
   visible: boolean;
@@ -58,7 +60,29 @@ const AddTeacherDrawer: React.FC<AddTeacherDrawerProps> = ({
       e.preventDefault();
     }
   };
+  const useDebounce = (value: string, delay: number) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+      const handler = setTimeout(() => setDebouncedValue(value), delay);
+      return () => clearTimeout(handler);
+    }, [value, delay]);
+    return debouncedValue;
+  };
+  const [courseSearchTerm, setCourseSearchTerm] = useState("");
+  const debouncedCourseSearchTerm = useDebounce(courseSearchTerm, 500);
+  const { data: coursesData = [], isLoading: isCoursesLoading } = useQuery({
+    queryKey: ["search-course", debouncedCourseSearchTerm],
+    queryFn: async () => {
+      if (!debouncedCourseSearchTerm) return [];
+      const res = await axiosInstance.get("/group/search-course", {
+        params: { search: debouncedCourseSearchTerm },
+      });
 
+      return Array.isArray(res.data.data) ? res.data.data : [];
+    },
+    enabled: !!debouncedCourseSearchTerm,
+  });
+  const handleCourseSearch = (value: string) => setCourseSearchTerm(value);
   const handlePhonePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     const pastedText = e.clipboardData.getData("text/plain");
@@ -123,7 +147,9 @@ const AddTeacherDrawer: React.FC<AddTeacherDrawerProps> = ({
           },
           header: {
             background: isDarkMode ? "#111827" : "#ffffff",
-            borderBottom: isDarkMode ? "1px solid #374151" : "1px solid #f0f0f0",
+            borderBottom: isDarkMode
+              ? "1px solid #374151"
+              : "1px solid #f0f0f0",
           },
         }}
       >
@@ -180,10 +206,14 @@ const AddTeacherDrawer: React.FC<AddTeacherDrawerProps> = ({
                 </span>
               }
               rules={[
-                { required: true, message: "Iltimos, telefon raqamini kiriting" },
+                {
+                  required: true,
+                  message: "Iltimos, telefon raqamini kiriting",
+                },
                 {
                   pattern: /^\+998\d{9}$/,
-                  message: "Telefon raqami +998 bilan boshlanishi va 13 ta belgidan iborat bo'lishi kerak",
+                  message:
+                    "Telefon raqami +998 bilan boshlanishi va 13 ta belgidan iborat bo'lishi kerak",
                 },
               ]}
             >
@@ -206,30 +236,42 @@ const AddTeacherDrawer: React.FC<AddTeacherDrawerProps> = ({
                 { required: true, message: "Iltimos, parolni kiriting" },
                 {
                   min: 6,
-                  message:
-                    "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
+                  message: "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
                 },
               ]}
             >
               <Input.Password placeholder="Parol kiriting" />
             </Form.Item>
 
+         
             <Form.Item
-              name="field"
-              label={
-                <span className={isDarkMode ? "text-gray-300" : ""}>
-                  Fan tili
-                </span>
-              }
-              rules={[
-                { required: true, message: "Iltimos, fan tilini tanlang" },
-              ]}
+              name="course_id"
+              label="Kurs"
+              rules={[{ required: true, message: "Kursni tanlang" }]}
             >
-              <Select placeholder="Fan tilini tanlang">
-                <Select.Option value="Frontend dasturlash">Frontend dasturlash</Select.Option>
-                <Select.Option value="Backend dasturlash">Backend dasturlash</Select.Option>
-                <Select.Option value="Rus tili">Rus tili</Select.Option>
-                <Select.Option value="Ingliz tili">Ingliz tili</Select.Option>
+              <Select
+                showSearch
+                placeholder="Kursni tanlang"
+                loading={isCoursesLoading}
+                onSearch={handleCourseSearch}
+                filterOption={false}
+                notFoundContent={
+                  isCoursesLoading ? (
+                    <Spin size="small" />
+                  ) : debouncedCourseSearchTerm ? (
+                    "Topilmadi"
+                  ) : (
+                    "Qidirish uchun yozing"
+                  )
+                }
+              >
+                {coursesData.map((course: any) => (
+                  <Select.Option key={course._id} value={course._id}>
+                    {typeof course.name === "object"
+                      ? course.name.name
+                      : course.name}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
 

@@ -44,7 +44,7 @@ const TeacherDarkTable = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (data) setTeachers(data);
+    if (data) setTeachers(data.reverse());
 
     const user = Cookies.get("user");
     if (user) {

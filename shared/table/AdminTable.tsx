@@ -61,7 +61,7 @@ const AdminTable = () => {
 
   useEffect(() => {
     if (data) {
-      setAdmins(data);
+      setAdmins(data.reverse());
     }
     const user = Cookies.get("user");
     if (user) {

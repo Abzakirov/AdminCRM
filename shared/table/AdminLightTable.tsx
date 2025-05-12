@@ -48,10 +48,10 @@ const AdminTableLight = () => {
   const { mutate: returnVacation, isPending: isReturningVacation } =
     useReturnVacationMutation();
   const { mutate: returnWork } = useReturnWorkMutation();
-  const router =useRouter()
+  const router = useRouter();
 
   useEffect(() => {
-    if (data) setAdmins(data);
+    if (data) setAdmins(data.reverse());
 
     const user = Cookies.get("user");
     if (user) {
@@ -311,7 +311,7 @@ const AdminTableLight = () => {
             <strong>
               {adminToReturnWork.first_name} {adminToReturnWork.last_name || ""}
             </strong>
-          <p>  ni ishga qaytishini xohlaysizmi?</p>
+            <p> ni ishga qaytishini xohlaysizmi?</p>
           </p>
         )}
       </Modal>

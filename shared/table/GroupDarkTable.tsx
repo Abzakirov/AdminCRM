@@ -60,11 +60,10 @@ const GroupDarkTable = () => {
     },
     enabled: mounted, 
   });
-  console.log(groupsData);
 
   // Update groups when data changes
   useEffect(() => {
-    if (groupsData) setGroups(groupsData);
+    if (groupsData) setGroups(groupsData.reverse());
   }, [groupsData]);
 
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroupMutation();

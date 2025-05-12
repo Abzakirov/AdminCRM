@@ -52,7 +52,7 @@ const GroupLightTable = () => {
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroupMutation();
 
   useEffect(() => {
-    if (groupsData) setGroups(groupsData);
+    if (groupsData) setGroups(groupsData.reverse());
     const user = Cookies.get("user");
     if (user) {
       try {
