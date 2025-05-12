@@ -38,7 +38,6 @@ const GroupLightTable = () => {
       }
     },
   });
-  console.log(groupsData);
 
   const router = useRouter();
 
@@ -64,21 +63,6 @@ const GroupLightTable = () => {
       }
     }
   }, [groupsData]);
-
-  const getStatusColor = (status: string | undefined) => {
-    if (!status) {
-      return { color: "#ff4d4f", bg: "rgba(255, 77, 79, 0.1)" }; 
-    }
-    
-    switch (status.toLowerCase()) {
-      case "faol":
-        return { color: "#389e0d", bg: "rgba(82, 196, 26, 0.1)" };
-      case "arxivlangan":
-        return { color: "#d48806", bg: "rgba(250, 173, 20, 0.1)" };
-      default:
-        return { color: "#cf1322", bg: "rgba(255, 77, 79, 0.1)" };
-    }
-  };
 
   const handleMenuClick = (record: GroupType, action: string) => {
     switch (action) {
@@ -128,29 +112,10 @@ const GroupLightTable = () => {
       render: (students) => <span style={{ color: "#606060" }}>{students?.length || 0}</span>,
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status: string) => {
-        const { color, bg } = getStatusColor(status);
-        return (
-          <span
-            style={{
-              display: "inline-block",
-              padding: "4px 12px",
-              borderRadius: "20px",
-              fontSize: "12px",
-              fontWeight: 500,
-              color,
-              backgroundColor: bg,
-              border: `1px solid ${color}`,
-              boxShadow: `0 0 5px ${bg}`,
-            }}
-          >
-            {status ? status.toUpperCase() : 'UNKNOWN'}
-          </span>
-        );
-      },
+      title: "Price",
+      dataIndex: "price",  
+      key: "price",
+      render: (price: number) => <span style={{ color: "#606060" }}>{price || 'N/A'}</span>,
     },
     ...(userRole === "manager" || userRole === "raxbar"
       ? [
@@ -163,8 +128,6 @@ const GroupLightTable = () => {
                   items: [
                     { label: "Tahrirlash", key: "edit" },
                     { label: "O'chirish", key: "delete", danger: true },
-                    { label: "Arxivlash", key: "archive" },
-                    { label: "Faollashtirish", key: "activate" },
                   ],
                   onClick: ({ key }) => handleMenuClick(record, key),
                 }}
@@ -277,7 +240,7 @@ const GroupLightTable = () => {
       >
         {groupToDelete && (
           <p>
-            <strong>{groupToDelete.name}</strong> guruhini o'chirishni xohlaysizmi?
+            <strong>{groupToDelete._id}</strong> guruhini o'chirishni xohlaysizmi?
           </p>
         )}
       </Modal>

@@ -612,14 +612,97 @@ export const useCreateCourseMutation = () => {
 
       return response.data.data;
     },
-    onSuccess: (response:object) => {
+    onSuccess: (response: object) => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
       showSuccessToast("Kurs  muvaffaqiyatli yaratildi!");
-      console.log(response);
     },
     onError: (error: any) => {
       showErrorToast(
         error?.response?.data?.message || "Kurs  yaratishda xatolik!"
+      );
+    },
+  });
+};
+
+export const useEditCourseMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["edit-course"],
+    mutationFn: async (data: object) => {
+      const response = await axiosInstance.post("/course/edit-course", data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      showSuccessToast("Kurs muvaffaqiyatli o'zgartirildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(
+        error?.response?.data?.message || "Kursni o'zgartirishda xatolik!"
+      );
+    },
+  });
+};
+
+export const useDeleteCourseMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["delete-course"],
+    mutationFn: async (data: {course_id:string}) => {
+      const response = await axiosInstance.delete("/course/delete-course", { data });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      showSuccessToast("Kurs muvaffaqiyatli o'chirildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(
+        error?.response?.data?.message || "Kursni o'chirishda xatolik!"
+      );
+    },
+  });
+};
+
+export const useFreezeCourseMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["freeze-course"],
+    mutationFn: async (course_id: string) => {
+      const response = await axiosInstance.put("/course/freeze-course", {
+        course_id
+      });
+      return response.data;
+    },
+    
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      showSuccessToast("Kurs muvaffaqiyatli toxtatildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(
+        error?.response?.data?.message || "Kursni toxtatishda xatolik!"
+      );
+    },
+  });
+};
+export const useUnFreezeCourseMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["Unfreeze-course"],
+    mutationFn: async (course_id: string) => {
+      const response = await axiosInstance.put("/course/unfreeze-course", {
+          course_id   
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      showSuccessToast("Kurs muvaffaqiyatli davom etildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(
+        error?.response?.data?.message || "Kursni davom etishda xatolik!"
       );
     },
   });

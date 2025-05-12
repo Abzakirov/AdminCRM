@@ -1,23 +1,23 @@
 import { axiosInstance } from '@/hooks/useAxios/useAxios';
-import InfoAdmin from '@/components/InfoAdmin/InfoAdmin';
+import GroupInfoComponent from '@/components/GroupInfo/GroupInfoComponent';
 
-async function getAdminData(id: string) {
+async function getGroupData(id: string) {
   try {
     const response = await axiosInstance.get(`/group/one-group/${id}`);
-    if (response.data && response.data.data) {
-      return response.data.data;
-    }
-    return null;
+    return response.data?.data || null;
   } catch (error) {
-    console.error("Error fetching admin data:", error);
+    console.error("Error fetching group data:", error);
     return null;
   }
 }
 
-export default async function GroupInfoPage({ params }: { params: { group_id: string } }) {
-  const adminData = await getAdminData(params.group_id);
-  
-  return (
-    <InfoAdmin id={params?.group_id} initialData={adminData} />
-  );
+export default async function GroupInfoPage({
+  params,
+}: {
+  params: { groups_info_id: string };
+}) {
+  const groupId = params.groups_info_id;
+  const groupData = await getGroupData(groupId);
+
+  return <GroupInfoComponent id={groupId} initialData={groupData} />;
 }

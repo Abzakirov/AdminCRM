@@ -2,6 +2,7 @@
 
 import OpenGroupButton from "@/components/openDrawerButton/OpenGroupButton ";
 import CreateGroup from "@/shared/createGroup/CreateGroup";
+import '@ant-design/v5-patch-for-react-19';
 import { Input } from "antd";
 import { useState } from "react";
 
@@ -19,7 +20,7 @@ const GroupHeader: React.FC = () => {
   return (
     <div className="flex items-center justify-between p-3">
       <div>
-        <h2 className="text-[18px] font-medium">O'quvchilar royhati</h2>
+        <h2 className="text-[18px] font-medium">Gruhlar royhati</h2>
       </div>
       <div className="flex items-center gap-3">
         <Input

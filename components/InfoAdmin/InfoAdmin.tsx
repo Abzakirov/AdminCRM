@@ -43,7 +43,6 @@ const InfoAdmin = ({ id, initialData = null }: { id: string, initialData?: Admin
     }
   }, [nextTheme]);
 
-  // Fetch admin data using useQuery
   const { data: adminData, isLoading, error } = useQuery({
     queryKey: ['adminData', id],
     queryFn: async () => {

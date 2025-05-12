@@ -7,7 +7,6 @@ const TeacherInfo = async ({ params }: { params: { teacher_id: string } }) => {
     try {
       const response = await axiosInstance.get(`/teacher/get-teacher/${id}`);
       if (response.data && response.data.data) {
-        console.log("Данные от бэкенда:", response.data.data); 
         return response.data.data;
       }
       return null;

@@ -14,9 +14,7 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import { MoreOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
-import {
-  useDeleteGroupMutation,
-} from "@/hooks/mutation";
+import { useDeleteGroupMutation } from "@/hooks/mutation";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import "./AdminTable.css";
@@ -24,6 +22,32 @@ import EditEndGroup from "../edit-end-groups/EditEndGroup";
 import EditPriceGroup from "../edit-price-groups/EditPriceGroup";
 
 const GroupDarkTable = () => {
+  const router = useRouter();
+  const [groups, setGroups] = useState<GroupType[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<GroupType | null>(null);
+  const [selectedGroupForPrice, setSelectedGroupForPrice] = useState<GroupType | null>(null);
+  const [groupToDelete, setGroupToDelete] = useState<GroupType | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Set mounted state when component mounts on client-side to prevent hydration issues
+  useEffect(() => {
+    setMounted(true);
+    
+    // Get user role from cookies - only on client side
+    const user = Cookies.get("user");
+    if (user) {
+      try {
+        const parsed = JSON.parse(user);
+        setUserRole(parsed.role);
+      } catch (error) {
+        console.error("Cookie parsing error:", error);
+      }
+    }
+  }, []);
+
+  // Only fetch data after component is mounted to avoid hydration mismatch
   const {
     data: groupsData,
     isLoading,
@@ -34,50 +58,24 @@ const GroupDarkTable = () => {
       const res = await axiosInstance.get("/group/get-all-group");
       return res.data.data;
     },
+    enabled: mounted, 
   });
+  console.log(groupsData);
 
-  const router = useRouter();
-
-  const [groups, setGroups] = useState<GroupType[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<GroupType | null>(null);
-  const [groupToDelete, setGroupToDelete] = useState<GroupType | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  // Update groups when data changes
+  useEffect(() => {
+    if (groupsData) setGroups(groupsData);
+  }, [groupsData]);
 
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteGroupMutation();
 
-  useEffect(() => {
-    if (groupsData) setGroups(groupsData);
-    const user = Cookies.get("user");
-    if (user) {
-      try {
-        const parsed = JSON.parse(user);
-        setUserRole(parsed.role);
-      } catch (error) {
-        console.error("Cookie parsing error:", error);
-      }
-    }
-  }, [groupsData]);
-
-  const getStatusColor = (status: string | undefined) => {
-    if (!status) {
-      return { color: "#ff4d4f", bg: "rgba(255, 77, 79, 0.2)" };
-    }
-
-    switch (status.toLowerCase()) {
-      case "faol":
-        return { color: "#52c41a", bg: "rgba(82, 196, 26, 0.2)" };
-      case "arxivlangan":
-        return { color: "#faad14", bg: "rgba(250, 173, 20, 0.2)" };
-      default:
-        return { color: "#ff4d4f", bg: "rgba(255, 77, 79, 0.2)" };
-    }
-  };
-
   const handleMenuClick = (record: GroupType, action: string) => {
     switch (action) {
-      case "edit":
+      case "edit-end":
         setSelectedGroup(record);
+        break;
+      case "edit-price":
+        setSelectedGroupForPrice(record);
         break;
       case "delete":
         setGroupToDelete(record);
@@ -97,7 +95,8 @@ const GroupDarkTable = () => {
     });
   };
 
-  const columns: ColumnsType<GroupType> = [
+  // Only define columns after component is mounted to avoid hydration issues
+  const getColumns = (): ColumnsType<GroupType> => [
     {
       title: "Nomi",
       dataIndex: "name",
@@ -108,45 +107,38 @@ const GroupDarkTable = () => {
       title: "O'qituvchi",
       dataIndex: "teacher",
       key: "teacher",
-      render: (teacher) => (
-        <span style={{ fontWeight: 500 }}>
-          {teacher?.first_name || ""} {teacher?.last_name || ""}
-          {!teacher?.first_name && !teacher?.last_name && "N/A"}
-        </span>
-      ),
+      render: (teacher) => {
+        // Handle when teacher is potentially an object (not a string)
+        if (typeof teacher === 'object' && teacher !== null) {
+          return (
+            <span style={{ fontWeight: 500 }}>
+              {teacher.first_name || ""} {teacher.last_name || ""}
+              {!teacher.first_name && !teacher.last_name && "N/A"}
+            </span>
+          );
+        }
+        return <span style={{ fontWeight: 500 }}>N/A</span>;
+      },
     },
     {
       title: "Talabalar soni",
       dataIndex: "students",
       key: "students_count",
-      render: (students) => (
-        <span style={{ color: "#d1d5db" }}>{students?.length || 0}</span>
-      ),
+      render: (students) => {
+        // Make sure students is an array before accessing length
+        const count = Array.isArray(students) ? students.length : 0;
+        return <span style={{ color: "#d1d5db" }}>{count}</span>;
+      },
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status: string) => {
-        const { color, bg } = getStatusColor(status);
-        return (
-          <span
-            style={{
-              display: "inline-block",
-              padding: "4px 12px",
-              borderRadius: "20px",
-              fontSize: "12px",
-              fontWeight: 500,
-              color,
-              backgroundColor: bg,
-              border: `1px solid ${color}`,
-              boxShadow: `0 0 8px ${bg}`,
-            }}
-          >
-            {status ? status.toUpperCase() : "UNKNOWN"}
-          </span>
-        );
-      },
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      render: (price: number) => (
+        <span style={{ fontWeight: 500, color: "#4f46e5" }}>
+          {price ? `$${price.toFixed(2)}` : "N/A"}
+        </span>
+      ),
     },
     ...(userRole === "manager" || userRole === "raxbar"
       ? [
@@ -157,8 +149,8 @@ const GroupDarkTable = () => {
               <Dropdown
                 menu={{
                   items: [
-                    { label: "Edit-End-Group", key: "edit" },
-                    { label: "Edit-Price-Group", key: "delete", danger: true },
+                    { label: "Edit-End-Group", key: "edit-end" },
+                    { label: "Edit-Price-Group", key: "edit-price" },
                     { label: "O'chirish", key: "delete", danger: true },
                   ],
                   onClick: ({ key }) => handleMenuClick(record, key),
@@ -182,6 +174,25 @@ const GroupDarkTable = () => {
     borderCollapse: "separate",
     borderSpacing: "0 10px",
   };
+
+  // Render a simple placeholder during SSR to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div 
+        style={{ 
+          width: "100%", 
+          height: "200px", 
+          backgroundColor: "#111827", 
+          borderRadius: "8px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center" 
+        }}
+      >
+        <span style={{ color: "#9ca3af" }}>Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <ConfigProvider
@@ -226,10 +237,10 @@ const GroupDarkTable = () => {
           }}
         >
           <Table
-            columns={columns}
-            dataSource={groups}
+            columns={getColumns()}
+            dataSource={Array.isArray(groups) ? groups : []}
             loading={isLoading}
-            rowKey={(record) => record._id}
+            rowKey={(record) => record._id || Math.random().toString()}
             pagination={{
               position: ["bottomRight"],
               className: "custom-pagination",
@@ -241,6 +252,7 @@ const GroupDarkTable = () => {
             onRow={(record) => {
               return {
                 onClick: (event) => {
+                  // Type assertion for the event target
                   const target = event.target as HTMLElement;
                   if (
                     target.closest(".actions-dropdown") ||
@@ -272,26 +284,31 @@ const GroupDarkTable = () => {
       >
         {groupToDelete && (
           <p>
-            <strong>{groupToDelete.name}</strong> guruhini o'chirishni
+            <strong>{groupToDelete?.group || groupToDelete._id}</strong> guruhini o'chirishni
             xohlaysizmi?
           </p>
         )}
       </Modal>
 
-      <EditEndGroup
-        group={selectedGroup}
-        onClose={() => {
-          setSelectedGroup(null);
-          refetch();
-        }}
-      />
+      {selectedGroup && (
+        <EditEndGroup
+          group={selectedGroup}
+          onClose={() => {
+            setSelectedGroup(null);
+            refetch();
+          }}
+        />
+      )}
 
-      <EditPriceGroup
-      onClose={()=>{
-        
-        setSelectedGroup(null);
-        refetch();
-      }}/>
+      {selectedGroupForPrice && (
+        <EditPriceGroup
+          group={selectedGroupForPrice}
+          onClose={() => {
+            setSelectedGroupForPrice(null);
+            refetch();
+          }}
+        />
+      )}
     </ConfigProvider>
   );
 };

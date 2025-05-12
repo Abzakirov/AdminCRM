@@ -36,7 +36,7 @@ const OpenGroupButton: React.FC<Props> = ({ showDrawer }) => {
 
   return (
     <Button type="primary" onClick={handleClick}>
-      O'quvchi yaratish
+      Gruh yaratish
     </Button>
   );
 };

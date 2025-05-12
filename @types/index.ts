@@ -227,14 +227,13 @@ export type StudentType = {
 
 export type GroupType = {
   _id: string;
-  name: string;
+  group:string
 };
 
 export interface GroupsType {
-  name: string;
+  course_id: string;
   teacher: string;
   started_group: string;
-  price: number;
 }
 
 export interface LeaveHistoryType {

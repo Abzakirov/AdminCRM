@@ -44,11 +44,11 @@ const AdminTable = () => {
     null
   );
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [vacationAdminId, setVacationAdminId] = useState<string | null>(null);
   const [adminToReturnVacation, setAdminToReturnVacation] =
     useState<AdminUserType | null>(null);
   const [isReturnVacationModalOpen, setIsReturnVacationModalOpen] =
     useState(false);
-  const [vacationAdminId, setVacationAdminId] = useState<string | null>(null);
   const [adminToReturnWork, setAdminToReturnWork] =
     useState<AdminUserType | null>(null);
   const [isReturnWorkModalOpen, setIsReturnWorkModalOpen] = useState(false);
@@ -74,15 +74,8 @@ const AdminTable = () => {
     }
   }, [data]);
 
-  
-
-  const handleMenuClick = (
-    e: React.MouseEvent,
-    record: AdminUserType,
-    action: string
-  ) => {
-    e.stopPropagation();
-    switch (action) {
+  const handleMenuClick = (key: string, record: AdminUserType) => {
+    switch (key) {
       case "edit":
         setSelectedUser(record);
         break;
@@ -294,11 +287,7 @@ const AdminTable = () => {
                       items,
                       onClick: ({ key, domEvent }) => {
                         domEvent.stopPropagation();
-                        handleMenuClick(
-                          domEvent as React.MouseEvent,
-                          record,
-                          key
-                        );
+                        handleMenuClick(key, record);
                       },
                     }}
                     trigger={["click"]}
@@ -443,9 +432,7 @@ const AdminTable = () => {
 
       <Modal
         title={
-          <div
-            style={{ display: "flex", alignItems: "center", color: "blue" }}
-          >
+          <div style={{ display: "flex", alignItems: "center", color: "blue" }}>
             <span style={{ fontSize: "18px", fontWeight: "bold" }}>
               Ta'tildan qaytarishni tasdiqlang
             </span>
