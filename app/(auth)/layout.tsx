@@ -7,6 +7,7 @@ import { ToastProvider } from "@/providers/ToastProvider";
 import { ThemeProvider } from "@/shared/dark-mode";
 
 const inter = Inter({
+  subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "700"],
 });
 
