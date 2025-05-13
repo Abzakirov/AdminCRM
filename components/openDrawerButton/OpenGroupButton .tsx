@@ -35,7 +35,7 @@ const OpenGroupButton: React.FC<Props> = ({ showDrawer }) => {
   if (!user) return null;
 
   return (
-    <Button type="primary" onClick={handleClick}>
+    <Button type="primary" className="!max-[600px]:w-full" onClick={handleClick}>
       Gruh yaratish
     </Button>
   );

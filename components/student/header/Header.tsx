@@ -17,15 +17,15 @@ const StudentHeader: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-between p-3">
+    <div className="flex items-center justify-between p-3 max-[500px]:flex-wrap max-[500px]:gap-3 max-[500px]:justify-center">
       <div>
         <h2 className="text-[18px] font-medium">O&apos;quvchilar royhati</h2>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 max-[500px]:flex-wrap max-[600px]:gap-3">
         <Input
           type="text"
           placeholder="Search Administrative authorities"
-          className="!w-[270px]"
+          className="!w-[270px] !max-[500px]:w-full"
         />
         <OpenStudentDrawer showDrawer={showDrawer} />
         <CreateStudent visible={drawerVisible} onClose={closeDrawer} />

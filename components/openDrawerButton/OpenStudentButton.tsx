@@ -35,7 +35,7 @@ const OpenStudentDrawer: React.FC<Props> = ({ showDrawer }) => {
   if (!user) return null;
 
   return (
-    <Button type="primary" onClick={handleClick}>
+    <Button type="primary" className="!max-[500px]:w-full max-[500px]:!w-full" onClick={handleClick}>
       O&apos;quvchi yaratish
     </Button>
   );
