@@ -19,7 +19,7 @@ const StudentHeader: React.FC = () => {
   return (
     <div className="flex items-center justify-between p-3">
       <div>
-        <h2 className="text-[18px] font-medium">O'quvchilar royhati</h2>
+        <h2 className="text-[18px] font-medium">O&apos;quvchilar royhati</h2>
       </div>
       <div className="flex items-center gap-3">
         <Input

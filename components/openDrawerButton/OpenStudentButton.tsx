@@ -36,7 +36,7 @@ const OpenStudentDrawer: React.FC<Props> = ({ showDrawer }) => {
 
   return (
     <Button type="primary" onClick={handleClick}>
-      O'quvchi yaratish
+      O&apos;quvchi yaratish
     </Button>
   );
 };

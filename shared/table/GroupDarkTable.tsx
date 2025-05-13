@@ -60,6 +60,7 @@ const GroupDarkTable = () => {
     },
     enabled: mounted, 
   });
+  console.log(groupsData);
 
   // Update groups when data changes
   useEffect(() => {

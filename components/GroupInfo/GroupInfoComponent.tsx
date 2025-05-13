@@ -21,7 +21,6 @@ import {
 } from "antd";
 import {
   TeamOutlined,
-  CalendarOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -303,7 +302,7 @@ const GroupInfoComponent = ({ id, initialData }: GroupInfoComponentProps) => {
   if (!groupData) {
     return (
       <div className="flex flex-col justify-center items-center h-screen text-red-500">
-        <h2>Ma'lumot topilmadi</h2>
+        <h2>Ma&apos;lumot topilmadi</h2>
       </div>
     );
   }
@@ -465,7 +464,7 @@ const GroupInfoComponent = ({ id, initialData }: GroupInfoComponentProps) => {
               {/* Student Capacity */}
               <div className="mb-5">
                 <div className="flex justify-between mb-2">
-                  <span style={{ color: currentTheme.textSecondary }}>O'quvchilar sig'imi</span>
+                  <span style={{ color: currentTheme.textSecondary }}>O&apos;quvchilar sig&apos;imi</span>
                   <span
                     style={{
                       color:
@@ -609,7 +608,7 @@ const GroupInfoComponent = ({ id, initialData }: GroupInfoComponentProps) => {
                   {groupData.students.length} {groupData.max_students ? `/ ${groupData.max_students}` : ""}
                 </Descriptions.Item>
                 <Descriptions.Item label="Guruh narxi">
-                  {groupData.price.toLocaleString()} so'm
+                  {groupData.price.toLocaleString()} so&apos;m
                 </Descriptions.Item>
                 <Descriptions.Item label="Yaratilgan sana">
                   {moment(groupData.created_at).format("DD.MM.YYYY")}
@@ -673,7 +672,7 @@ const GroupInfoComponent = ({ id, initialData }: GroupInfoComponentProps) => {
                       className="m-0 text-sm"
                       style={{ color: currentTheme.textSecondary }}
                     >
-                      {groupData.subject} o'qituvchisi
+                      {groupData.subject} o&apos;qituvchisi
                     </p>
                   </div>
                 </div>

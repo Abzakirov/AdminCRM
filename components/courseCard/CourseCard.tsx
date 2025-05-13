@@ -15,7 +15,11 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/hooks/useAxios/useAxios";
 import { Button, Modal, Spin, Tooltip } from "antd";
 import EditCourseModal from "@/shared/mod/EditCourse";
-import { useDeleteCourseMutation, useFreezeCourseMutation, useUnFreezeCourseMutation } from "@/hooks/mutation";
+import {
+  useDeleteCourseMutation,
+  useFreezeCourseMutation,
+  useUnFreezeCourseMutation,
+} from "@/hooks/mutation";
 
 interface Course {
   _id?: string;
@@ -33,9 +37,10 @@ const CourseCardItem = ({ course }: { course: Course }) => {
   const [isOpenFreezeModal, setIsOpenFreezeModal] = useState(false);
   const [isOpenUnFreezeModal, setIsOpenUnFreezeModal] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const {mutate: freezeMutation, isPending: isFreezing}=useFreezeCourseMutation();
-  const {mutate: UnfreezeMutation, isPending: isUnFreezing}=useUnFreezeCourseMutation();
-
+  const { mutate: freezeMutation, isPending: isFreezing } =
+    useFreezeCourseMutation();
+  const { mutate: UnfreezeMutation, isPending: isUnFreezing } =
+    useUnFreezeCourseMutation();
   const { mutate: deleteMutation, isPending: isDeleting } =
     useDeleteCourseMutation();
 
@@ -44,14 +49,13 @@ const CourseCardItem = ({ course }: { course: Course }) => {
     setIsDeleteModalOpen(false);
   };
   const handleFreezeConfirm = () => {
-    freezeMutation(course._id as string); 
+    freezeMutation(course._id as string);
     setIsOpenFreezeModal(false);
   };
   const handleUnFreezeConfirm = () => {
-    UnfreezeMutation(course._id as string); 
+    UnfreezeMutation(course._id as string);
     setIsOpenUnFreezeModal(false);
   };
-  
 
   const getCourseName = () => {
     return typeof course.name === "object" ? course.name.name : course.name;
@@ -109,7 +113,7 @@ const CourseCardItem = ({ course }: { course: Course }) => {
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white">
                   {course.price ? course.price.toLocaleString("uz-UZ") : "0"}{" "}
-                  so'm
+                  so&apos;m
                 </p>
               </div>
             </div>
@@ -128,8 +132,8 @@ const CourseCardItem = ({ course }: { course: Course }) => {
               <EditIcon className="dark:text-white text-gray-900" />
             </Button>
           </Tooltip>
-          
-          <Tooltip title="O'chirish">
+
+          <Tooltip title="O&apos;chirish">
             <Button
               type="text"
               onClick={() => setIsDeleteModalOpen(true)}
@@ -138,21 +142,19 @@ const CourseCardItem = ({ course }: { course: Course }) => {
               <Trash2 className="dark:text-red-500 text-gray-900" />
             </Button>
           </Tooltip>
-          
-          <Tooltip title="To'xtatish">
-            
-            <Button type="text"
+
+          <Tooltip title="To&apos;xtatish">
+            <Button
+              type="text"
               onClick={() => setIsOpenFreezeModal(true)}
-              loading={isFreezing }>
-              
+              loading={isFreezing}
+            >
               <Pause className="dark:text-white text-gray-900" />
             </Button>
           </Tooltip>
-          
-          <Tooltip title="Davom etish"
-          >
-            <Button type="text"
-              onClick={() => setIsOpenUnFreezeModal(true)}>
+
+          <Tooltip title="Davom etish">
+            <Button type="text" onClick={() => setIsOpenUnFreezeModal(true)}>
               <Play className="dark:text-white text-gray-900" />
             </Button>
           </Tooltip>
@@ -167,17 +169,18 @@ const CourseCardItem = ({ course }: { course: Course }) => {
 
       <Modal
         title={
-          <div className="flex items-center gap-2 dark:bg-[#1f2937]">
-            <AlertTriangle size={20} className="text-red-500" />
-            <span className="text-lg font-bold text-red-500">
-              O'chirishni tasdiqlang
-            </span>
-          </div>
+          <p className={`text-${isDarkMode ? "gray-300" : "gray-700"} mb-4`}>
+            Siz rostdan ham{" "}
+            <span className="font-bold" style={{ color: colors.itemText }}>
+              {getCourseName()}
+            </span>{" "}
+            ni o&apos;chirishni xohlaysizmi? Bu amalni qaytarib bo&apos;lmaydi.
+          </p>
         }
         open={isDeleteModalOpen}
         onOk={handleDeleteConfirm}
         onCancel={() => setIsDeleteModalOpen(false)}
-        okText="O'chirish"
+        okText="O&apos;chirish"
         cancelText="Bekor qilish"
         okButtonProps={{
           danger: true,
@@ -216,26 +219,19 @@ const CourseCardItem = ({ course }: { course: Course }) => {
           },
         }}
       >
-        <p className={`text-${isDarkMode ? "gray-300" : "gray-700"} mb-4`}>
-          Siz rostdan ham{" "}
-          <span className="font-bold" style={{ color: colors.itemText }}>
-            {getCourseName()}
-          </span>{" "}
-          ni o'chirishni xohlaysizmi? Bu amalni qaytarib bo'lmaydi.
-        </p>
-
         {isDeleting && (
           <div className="flex justify-center mt-4">
             <Spin />
           </div>
         )}
       </Modal>
+
       <Modal
         title={
           <div className="flex items-center gap-2 dark:bg-[#1f2937]">
             <AlertTriangle size={20} className="text-red-500" />
             <span className="text-lg font-bold text-red-500">
-             Davov etishni tasdiqlang
+              Davom etishni tasdiqlang
             </span>
           </div>
         }
@@ -286,32 +282,27 @@ const CourseCardItem = ({ course }: { course: Course }) => {
           <span className="font-bold" style={{ color: colors.itemText }}>
             {getCourseName()}
           </span>{" "}
-          gruhni davom ettirishni xohlaysizmi? Bu amalni qaytarib bo'lmaydi.
+          guruhni davom ettirishni xohlaysizmi? Bu amalni qaytarib bo&apos;lmaydi.
         </p>
-
-        {isDeleting && (
-          <div className="flex justify-center mt-4">
-            <Spin />
-          </div>
-        )}
       </Modal>
+
       <Modal
         title={
           <div className="flex items-center gap-2 dark:bg-[#1f2937]">
             <AlertTriangle size={20} className="text-red-500" />
             <span className="text-lg font-bold text-red-500">
-              To'xtatishni tasdiqlang
+              To&apos;xtatishni tasdiqlang
             </span>
           </div>
         }
         open={isOpenFreezeModal}
         onOk={handleFreezeConfirm}
         onCancel={() => setIsOpenFreezeModal(false)}
-        okText="To'xtatish"
+        okText="To&apos;xtatish"
         cancelText="Bekor qilish"
         okButtonProps={{
           danger: true,
-          loading: isDeleting,
+          loading: isFreezing,
           className: "bg-red-500 hover:bg-red-600 border-red-500 mt-3",
         }}
         cancelButtonProps={{
@@ -351,14 +342,8 @@ const CourseCardItem = ({ course }: { course: Course }) => {
           <span className="font-bold" style={{ color: colors.itemText }}>
             {getCourseName()}
           </span>{" "}
-          ni o'chirishni xohlaysizmi? Bu amalni qaytarib bo'lmaydi.
+          guruhni to&apos;xtatishni xohlaysizmi? Bu amalni qaytarib bo&apos;lmaydi.
         </p>
-
-        {isDeleting && (
-          <div className="flex justify-center mt-4">
-            <Spin />
-          </div>
-        )}
       </Modal>
     </div>
   );
@@ -375,7 +360,6 @@ const CourseCard = () => {
       return res.data.data;
     },
   });
-  console.log(courses)
 
   if (isLoading) {
     return (

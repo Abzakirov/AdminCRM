@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { StudentType } from '@/@types';
-import {
+import { 
   Card,
   Avatar,
   Descriptions,
@@ -15,7 +14,6 @@ import {
   theme,
   Timeline,
   Statistic,
-  Tag,
   Badge
 } from 'antd';
 import {
@@ -33,8 +31,26 @@ import {
 import moment from 'moment';
 import { axiosInstance } from '@/hooks/useAxios/useAxios';
 import { useTheme } from "next-themes";
+import { LeaveHistoryItem } from '@/@types';
 
 const { darkAlgorithm, defaultAlgorithm } = theme;
+
+// Updated type to match your specific data structure
+interface StudentType {
+  _id: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  groups: Array<{
+    name: string;
+    course: string;
+    started_group: string;
+  }>;
+  leave_history?: LeaveHistoryItem[];
+}
 
 const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialData?: StudentType | null }) => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
@@ -66,6 +82,7 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
     if (isDarkMode) {
       switch (status?.toLowerCase()) {
         case "faol":
+        case "aktiv":
           return { color: "#52c41a", bg: "rgba(82, 196, 26, 0.2)" };
         case "ta'tilda":
           return { color: "#faad14", bg: "rgba(250, 173, 20, 0.2)" };
@@ -77,45 +94,12 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
     } else {
       switch (status?.toLowerCase()) {
         case "faol":
+        case "aktiv":
           return { color: "#389e0d", bg: "rgba(82, 196, 26, 0.1)" };
         case "ta'tilda":
           return { color: "#d48806", bg: "rgba(250, 173, 20, 0.1)" };
         case "yakunladi":
           return { color: "#cf1322", bg: "rgba(255, 77, 79, 0.1)" };
-        default:
-          return { color: "#595959", bg: "rgba(140, 140, 140, 0.1)" };
-      }
-    }
-  };
-
-  const getSpecializationColor = (specialization: string) => {
-    if (isDarkMode) {
-      switch (specialization?.toLowerCase()) {
-        case "frontend":
-          return { color: "#1890ff", bg: "rgba(24, 144, 255, 0.2)" };
-        case "backend":
-          return { color: "#722ed1", bg: "rgba(114, 46, 209, 0.2)" };
-        case "mobile":
-          return { color: "#eb2f96", bg: "rgba(235, 47, 150, 0.2)" };
-        case "qa":
-          return { color: "#fa8c16", bg: "rgba(250, 140, 22, 0.2)" };
-        case "devops":
-          return { color: "#13c2c2", bg: "rgba(19, 194, 194, 0.2)" };
-        default:
-          return { color: "#8c8c8c", bg: "rgba(140, 140, 140, 0.2)" };
-      }
-    } else {
-      switch (specialization?.toLowerCase()) {
-        case "frontend":
-          return { color: "#096dd9", bg: "rgba(24, 144, 255, 0.1)" };
-        case "backend":
-          return { color: "#531dab", bg: "rgba(114, 46, 209, 0.1)" };
-        case "mobile":
-          return { color: "#c41d7f", bg: "rgba(235, 47, 150, 0.1)" };
-        case "qa":
-          return { color: "#d46b08", bg: "rgba(250, 140, 22, 0.1)" };
-        case "devops":
-          return { color: "#08979c", bg: "rgba(19, 194, 194, 0.1)" };
         default:
           return { color: "#595959", bg: "rgba(140, 140, 140, 0.1)" };
       }
@@ -172,7 +156,7 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
         color: isDarkMode ? '#ff4d4f' : '#cf1322'
       }}>
         <h2>Xatolik</h2>
-        <p>{(error as any).message || "Ma'lumotni yuklashda xatolik yuz berdi"}</p>
+        <p>{(error as Error).message || "Ma'lumotni yuklashda xatolik yuz berdi"}</p>
       </div>
     );
   }
@@ -187,17 +171,17 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
         flexDirection: 'column',
         color: isDarkMode ? '#ff4d4f' : '#cf1322'
       }}>
-        <h2>Ma'lumot topilmadi</h2>
+        <h2>Ma&apos;lumot topilmadi</h2>
       </div>
     );
   }
 
-  const statusStyle = getStatusColor(studentData.status || "");
-  const specializationStyle = getSpecializationColor(studentData.specialization || "");
+  // Determine group and other details
+  const group = studentData.groups && studentData.groups.length > 0 
+    ? studentData.groups[0].name 
+    : "NOMA'LUM";
   
-  // Assuming these fields might be added to the StudentType
-  const specialization = studentData.specialization || "Ma'lumot yo'q"; 
-  const group = studentData.group || "Ma'lumot yo'q";
+  const statusStyle = getStatusColor(studentData.status || "");
 
   const startDate = moment(studentData.createdAt);
   const currentDate = moment();
@@ -301,25 +285,6 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
                   {studentData.phone}
                 </p>
                 
-                {/* Specialization Tag */}
-                <Tag style={{
-                  marginBottom: '12px',
-                  color: specializationStyle.color,
-                  backgroundColor: specializationStyle.bg,
-                  borderColor: specializationStyle.color,
-                  padding: '2px 12px',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  boxShadow: `0 0 8px ${specializationStyle.bg}`,
-                }}>
-                  <ExperimentOutlined style={{ marginRight: '6px' }} />
-                  {specialization}
-                </Tag>
-                
                 <Divider style={{ borderColor: currentTheme.borderColor, margin: '16px 0' }} />
                 <div style={{
                   display: 'flex',
@@ -338,12 +303,6 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
                       height: '40px',
                       marginBottom: '8px',
                       transition: 'all 0.3s ease',
-                      transform: 'scale(1)',
-                      boxShadow: `0 0 0 rgba(${statusStyle.color}, 0)`,
-                      ':hover': {
-                        transform: 'scale(1.1)',
-                        boxShadow: `0 0 12px ${statusStyle.bg}`,
-                      }
                     }}>
                       <ClockCircleOutlined />
                     </div>
@@ -367,7 +326,7 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
                       <TeamOutlined />
                     </div>
                     <div style={{ color: currentTheme.textSecondary }}>
-                      O'quvchi
+                      O&apos;quvchi
                     </div>
                   </div>
                   <div>
@@ -430,24 +389,24 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
                     dot: <SmileOutlined style={{ fontSize: '16px' }} />,
                     children: (
                       <div>
-                        <p style={{ margin: 0, fontWeight: 500, color: currentTheme.textColor }}>O'qishni boshlagan</p>
+                        <p style={{ margin: 0, fontWeight: 500, color: currentTheme.textColor }}>O&apos;qishni boshlagan</p>
                         <p style={{ margin: 0, color: currentTheme.textTertiary }}>{moment(studentData.createdAt).format('DD.MM.YYYY')}</p>
                       </div>
                     )
                   },
                   ...(studentData.leave_history && studentData.leave_history.length > 0 ?
-                    studentData.leave_history.map((leave: any, index: number) => {
-                      const isHealthReason = leave.reason.toLowerCase().includes('tobi');
+                    studentData.leave_history.map((leave: LeaveHistoryItem, index: number) => {
+                      const isHealthReason = leave.reason?.toLowerCase().includes('tobi');
                       return {
                         color: isHealthReason ? (isDarkMode ? '#ff4d4f' : '#cf1322') : (isDarkMode ? '#faad14' : '#d48806'),
                         dot: isHealthReason ? <FrownOutlined style={{ fontSize: '16px' }} /> : <ClockCircleOutlined style={{ fontSize: '16px' }} />,
                         children: (
                           <div key={index}>
-                            <p style={{ margin: 0, fontWeight: 500, color: currentTheme.textColor }}>Ta'tilga chiqqan</p>
+                            <p style={{ margin: 0, fontWeight: 500, color: currentTheme.textColor }}>Ta&apos;tilga chiqqan</p>
                             <p style={{ margin: 0, color: currentTheme.textTertiary }}>
                               {moment(leave.start_date).format('DD.MM.YYYY')} - {leave.end_date ? moment(leave.end_date).format('DD.MM.YYYY') : 'Hozirgi kungacha'}
                             </p>
-                            {leave.reason && <p style={{ margin: 0, color: currentTheme.textTertiary }}>Sabab: {leave.reason}</p>}
+                            {leave.reason && <p style={{ margin: 0, color: currentTheme.textTertiary, marginTop: '4px' }}>Sabab: {leave.reason}</p>}
                           </div>
                         )
                       };
@@ -458,7 +417,6 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
             </Card>
           </Col>
           <Col xs={24} md={16}>
-            {/* Group and Specialization Card */}
             <Card
               title="O'quv yo'nalishi va guruh"
               style={{
@@ -493,9 +451,7 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
                     justifyContent: 'center',
                     alignItems: 'center',
                     transition: 'all 0.3s ease',
-                  }}
-                  className="hover:transform hover:scale-105"
-                  >
+                  }}>
                     <div style={{
                       backgroundColor: isDarkMode ? 'rgba(24, 144, 255, 0.2)' : 'rgba(24, 144, 255, 0.1)',
                       borderRadius: '50%',
@@ -515,13 +471,13 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
                       color: currentTheme.textColor, 
                       marginBottom: '8px',
                       fontSize: '18px'
-                    }}>Yo'nalish</h3>
+                    }}>Yo&apos;nalish</h3>
                     <p style={{ 
                       color: isDarkMode ? '#1890ff' : '#096dd9',
                       fontWeight: 600,
                       fontSize: '16px',
                       margin: 0
-                    }}>{specialization}</p>
+                    }}>Backend</p>
                   </div>
                 </Col>
                 <Col xs={24} md={12}>
@@ -538,9 +494,7 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
                     justifyContent: 'center',
                     alignItems: 'center',
                     transition: 'all 0.3s ease',
-                  }}
-                  className="hover:transform hover:scale-105"
-                  >
+                  }}>
                     <div style={{
                       backgroundColor: isDarkMode ? 'rgba(114, 46, 209, 0.2)' : 'rgba(114, 46, 209, 0.1)',
                       borderRadius: '50%',
@@ -628,13 +582,13 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
                       borderRadius: '20px',
                       fontSize: '12px',
                       fontWeight: 500,
-                      color: specializationStyle.color,
-                      backgroundColor: specializationStyle.bg,
-                      border: `1px solid ${specializationStyle.color}`,
-                      boxShadow: `0 0 8px ${specializationStyle.bg}`,
+                      color: isDarkMode ? '#1890ff' : '#096dd9',
+                      backgroundColor: isDarkMode ? 'rgba(24, 144, 255, 0.2)' : 'rgba(24, 144, 255, 0.1)',
+                      border: `1px solid ${isDarkMode ? '#1890ff' : '#096dd9'}`,
+                      boxShadow: isDarkMode ? '0 0 8px rgba(24, 144, 255, 0.2)' : '0 0 8px rgba(24, 144, 255, 0.1)',
                     }}
                   >
-                    {specialization}
+                    Backend
                   </span>
                 </Descriptions.Item>
                 <Descriptions.Item label="Guruh">
@@ -683,24 +637,14 @@ const StudentInfoComponent = ({ id, initialData = null }: { id: string, initialD
                   fontWeight: 600,
                   padding: '16px 24px',
                 }}
-                bodyStyle={{ padding: '24px' }}
               >
-                {studentData.leave_history.map((leave: any, index: number) => (
+                {studentData.leave_history.map((leave: LeaveHistoryItem, index: number) => (
                   <div key={index} style={{
                     padding: '16px',
                     border: `1px solid ${currentTheme.borderColor}`,
                     borderRadius: '8px',
                     backgroundColor: isDarkMode ? currentTheme.headerBg : '#f8fafc',
-                    marginBottom: index < studentData.leave_history.length - 1 ? '12px' : '0px',
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                    cursor: 'default',
-                    ':hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
-                    }
-                  }}
-                  className="hover:shadow-lg hover:-translate-y-1"
-                  >
+                  }}>
                     <Row gutter={[16, 16]}>
                       <Col xs={24} md={12}>
                         <div style={{ color: currentTheme.textTertiary }}>Boshlanish sanasi:</div>

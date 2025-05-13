@@ -116,7 +116,7 @@ export interface AdminType {
   createdAt: string;
   updatedAt: string;
   is_deleted: boolean;
-  leave_history?: LeaveType[];
+  leave_history?: LeaveHistoryItem[];
 
   work_date: string;
   work_end: string | null;
@@ -235,6 +235,12 @@ export interface GroupsType {
   teacher: string;
   started_group: string;
 }
+export  interface LeaveHistoryItem  {
+  start_date: string;
+  end_date: string;
+  reason?: string;
+};
+
 
 export interface LeaveHistoryType {
   _id: string;
