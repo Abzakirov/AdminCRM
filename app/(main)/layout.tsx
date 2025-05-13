@@ -9,6 +9,7 @@ import AdminShell from "@/components/adminShell/AdminShell";
 import { ToastProvider } from "@/providers/ToastProvider";
 
 const inter = Inter({
+  subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "700"],
 });
 
