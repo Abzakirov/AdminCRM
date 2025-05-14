@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Cookie from "js-cookie";
 import { z } from "zod";
 import type {
+  addStudentGroupType,
   AdminType,
   AdminUserType,
   CreateCategorytype,
@@ -369,6 +370,7 @@ export const useReturnTeacherWorkMutation = () => {
 };
 
 export const useStudentCreateMutation = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["create-student"],
     mutationFn: async (data: AdminUserType) => {
@@ -379,6 +381,7 @@ export const useStudentCreateMutation = () => {
       return response.data.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] }); 
       showSuccessToast("O'quvchi muvaffaqiyatli yaratildi!");
     },
     onError: (error: any) => {
@@ -703,6 +706,27 @@ export const useUnFreezeCourseMutation = () => {
     onError: (error: any) => {
       showErrorToast(
         error?.response?.data?.message || "Kursni davom etishda xatolik!"
+      );
+    },
+  });
+};
+
+
+export const useAddStudentGroupMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["add-student-group"],
+    mutationFn: async (data: addStudentGroupType) => {
+      const response = await axiosInstance.post("/student/added-new-group-student", data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
+      showSuccessToast("O'quvchi muvaffaqiyatli qo'shildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(
+        error?.response?.data?.message || "O'quvchini qo'shishda xatolik!"
       );
     },
   });

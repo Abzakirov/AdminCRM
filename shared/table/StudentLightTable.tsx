@@ -16,9 +16,14 @@ import {
 import Cookies from "js-cookie";
 import StudentVacation from "../mod/StudentVacation";
 import { useRouter } from "next/navigation";
+import AddStudentToGroupModal from "../mod/AddStudentGroup";
 
 const StudentLightTable = () => {
-  const { data: studentsData, isLoading, refetch } = useQuery<StudentUserType[]>({
+  const {
+    data: studentsData,
+    isLoading,
+    refetch,
+  } = useQuery<StudentUserType[]>({
     queryKey: ["students"],
     queryFn: async () => {
       const res = await axiosInstance.get("/student/get-all-students");
@@ -29,21 +34,32 @@ const StudentLightTable = () => {
   const router = useRouter();
 
   const [students, setStudents] = useState<StudentUserType[]>([]);
-  const [selectedUser, setSelectedUser] = useState<StudentUserType | null>(null);
-  const [studentToDelete, setStudentToDelete] = useState<StudentUserType | null>(null);
-  const [studentToReturnVacation, setStudentToReturnVacation] = useState<StudentUserType | null>(null);
-  const [studentToReturnWork, setStudentToReturnWork] = useState<StudentUserType | null>(null);
-  const [vacationStudentId, setVacationStudentId] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<StudentUserType | null>(
+    null
+  );
+  const [studentToDelete, setStudentToDelete] =
+    useState<StudentUserType | null>(null);
+  const [studentToReturnVacation, setStudentToReturnVacation] =
+    useState<StudentUserType | null>(null);
+  const [studentToReturnWork, setStudentToReturnWork] =
+    useState<StudentUserType | null>(null);
+  const [vacationStudentId, setVacationStudentId] = useState<string | null>(
+    null
+  );
   const [userRole, setUserRole] = useState<string | null>(null);
-
+  const [groupModalOpen, setGroupModalOpen] = useState(false);
+  const [studentToAddToGroup, setStudentToAddToGroup] =
+    useState<StudentUserType | null>(null);
   const [modals, setModals] = useState({
     delete: false,
     returnVacation: false,
     returnWork: false,
   });
 
-  const { mutate: deleteStudent, isPending: isDeleting } = useDeleteStudentMutation();
-  const { mutate: returnVacation, isPending: isReturningVacation } = useReturnVacationStudentMutation();
+  const { mutate: deleteStudent, isPending: isDeleting } =
+    useDeleteStudentMutation();
+  const { mutate: returnVacation, isPending: isReturningVacation } =
+    useReturnVacationStudentMutation();
   const { mutate: returnWork } = useReturnStudentWorkMutation();
 
   useEffect(() => {
@@ -80,6 +96,11 @@ const StudentLightTable = () => {
         setStudentToReturnWork(record);
         setModals((prev) => ({ ...prev, returnWork: true }));
         break;
+      case "add-to-group":
+        // Set the student for the group modal and open it
+        setStudentToAddToGroup(record);
+        setGroupModalOpen(true);
+        break;
     }
   };
 
@@ -115,6 +136,25 @@ const StudentLightTable = () => {
       },
     });
   };
+  
+  const handleCloseGroupModal = () => {
+    setGroupModalOpen(false);
+    setStudentToAddToGroup(null);
+    // Refresh the student data after adding to group
+    refetch();
+  };
+  
+  // Handle row click with proper checks for the Actions column
+  const handleRowClick = (record: StudentUserType, event: React.MouseEvent) => {
+    // Check if click was in the actions column
+    const target = event.target as HTMLElement;
+    const actionsColumn = target.closest('.actions-column, .actions-container, .actions-dropdown');
+    
+    // Only navigate if not clicking on actions column or its children
+    if (!actionsColumn) {
+      router.push(`/students/${record._id}`);
+    }
+  };
 
   const columns: ColumnsType<StudentUserType> = [
     {
@@ -122,7 +162,11 @@ const StudentLightTable = () => {
       dataIndex: "image",
       key: "image",
       render: (image: string, record) =>
-        image ? <Avatar src={image} /> : <Avatar>{record.first_name.charAt(0)}</Avatar>,
+        image ? (
+          <Avatar src={image} />
+        ) : (
+          <Avatar>{record.first_name.charAt(0)}</Avatar>
+        ),
     },
     { title: "Ism", dataIndex: "first_name", key: "first_name" },
     { title: "Familiya", dataIndex: "last_name", key: "last_name" },
@@ -150,22 +194,37 @@ const StudentLightTable = () => {
           {
             title: "Actions",
             key: "actions",
+            className: "actions-column", // Add class for styling and identification
             render: (_: any, record: StudentUserType) => (
-              <Dropdown
-                menu={{
-                  items: [
-                    { label: "Tahrirlash", key: "edit" },
-                    { label: "O'chirish", key: "delete", danger: true },
-                    { label: "Ta'tilga chiqarish", key: "vacation" },
-                    { label: "Ta'tildan qaytarish", key: "return-vacation" },
-                    { label: "O'qishga qaytarish", key: "return-work" },
-                  ],
-                  onClick: ({ key }) => handleMenuClick(record, key),
+              <div 
+                className="actions-container" 
+                onClick={(e) => {
+                  // Stop event propagation
+                  e.stopPropagation();
                 }}
-                trigger={["click"]}
               >
-                <Button type="text" icon={<MoreOutlined rotate={90} />} />
-              </Dropdown>
+                <Dropdown
+                  menu={{
+                    items: [
+                      { label: "Tahrirlash", key: "edit" },
+                      { label: "O'chirish", key: "delete", danger: true },
+                      { label: "Ta'tilga chiqarish", key: "vacation" },
+                      { label: "Ta'tildan qaytarish", key: "return-vacation" },
+                      { label: "O'qishga qaytarish", key: "return-work" },
+                      { label: "O'quvchini guruhga qo'shish", key: "add-to-group" }, // Added menu item
+                    ],
+                    onClick: ({ key }) => handleMenuClick(record, key),
+                  }}
+                  trigger={["click"]}
+                >
+                  <Button 
+                    type="text" 
+                    icon={<MoreOutlined rotate={90} />} 
+                    className="actions-dropdown"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </Dropdown>
+              </div>
             ),
           },
         ]
@@ -182,7 +241,7 @@ const StudentLightTable = () => {
         className="px-2"
         scroll={{ x: "max-content" }}
         onRow={(record) => ({
-          onClick: () => router.push(`/students/${record._id}`),
+          onClick: (event) => handleRowClick(record, event),
           style: { cursor: "pointer" },
         })}
       />
@@ -233,6 +292,13 @@ const StudentLightTable = () => {
           </p>
         )}
       </Modal>
+      
+      <AddStudentToGroupModal
+        open={groupModalOpen}
+        onClose={handleCloseGroupModal}
+        student={studentToAddToGroup}
+        isDarkMode={true}
+      />
 
       <Modal
         title="O'qishga qaytarishni tasdiqlang"

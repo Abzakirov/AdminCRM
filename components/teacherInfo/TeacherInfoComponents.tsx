@@ -554,7 +554,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
   );
 };
 
-interface Gruhlartype{
+export interface Gruhlartype{
   name: string,
   is_deleted:boolean,
   students:string[],

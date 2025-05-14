@@ -289,3 +289,9 @@ export interface EditPriceGroupType{
 export interface CreateCategorytype{
   name: string;
 }
+
+export interface addStudentGroupType{
+  student_id: string,
+  group_id: string,
+  joinedAt: string
+}
