@@ -14,10 +14,10 @@ async function getGroupData(id: string) {
 export default async function GroupInfoPage({
   params,
 }: {
-  params: { groups_info_id: string };
+  params: Promise<{ groups_info_id: string }>;
 }) {
-  const groupId = params.groups_info_id;
-  const groupData = await getGroupData(groupId);
+  const { groups_info_id } = await params;
+  const groupData = await getGroupData(groups_info_id);
 
-  return <GroupInfoComponent id={groupId} initialData={groupData} />;
+  return <GroupInfoComponent id={groups_info_id} initialData={groupData} />;
 }

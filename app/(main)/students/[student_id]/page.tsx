@@ -1,31 +1,24 @@
-import StudentInfoComponent from "@/components/studentInfo/StudentInfo";
 import { axiosInstance } from "@/hooks/useAxios/useAxios";
+import StudentInfoComponent from "@/components/studentInfo/StudentInfo";
 
-const StudentInfo = async ({ params }: { params: { student_id: string } }) => {
-
-    
-  async function getStudentData(id: string) {
-    try {
-      const response = await axiosInstance.get(`/student/student//${id}`);
-      if (response.data && response.data.data) {
-        console.log("Данные от бэкенда:", response.data.data); 
-        return response.data.data;
-      }
-      return null;
-    } catch (error) {
-      console.error("Ошибка при получении данных администратора:", error);
-      return null;
-    }
+async function getStudentData(id: string) {
+  try {
+    const response = await axiosInstance.get(`/student/student/${id}`);
+    return response.data?.data || null;
+  } catch (error) {
+    console.error("Ошибка при получении данных студента:", error);
+    return null;
   }
-  
-        
-  const StudentData = await getStudentData(params.student_id);
+}
 
-  return (
-    <div>
-      <StudentInfoComponent id={params?.student_id} initialData={StudentData} />
-    </div>
-  );
-};
+export default async function StudentInfoPage({
+  params,
+}: {
+  params: Promise<{ student_id: string }>;
+}) {
+  const { student_id } = await params;
 
-export default StudentInfo;
+  const studentData = await getStudentData(student_id);
+
+  return <StudentInfoComponent id={student_id} initialData={studentData} />;
+}
