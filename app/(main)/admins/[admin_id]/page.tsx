@@ -11,14 +11,18 @@ async function getAdminData(id: string) {
   }
 }
 
+
 export default async function InfoAdminPage({ 
   params,
 }: {
-  params: { admin_id: string };
+  params: Promise<{ admin_id: string }>;
 }) {
-  const adminData = await getAdminData(params?.admin_id);
+
+  const { admin_id } = await params;
+
+  const adminData = await getAdminData(admin_id);
   
 
 
-  return <InfoAdmin id={params?.admin_id} initialData={adminData} />;
+  return <InfoAdmin id={admin_id} initialData={adminData} />;
 }
