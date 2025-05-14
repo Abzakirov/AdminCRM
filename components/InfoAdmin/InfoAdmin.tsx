@@ -432,11 +432,7 @@ const InfoAdmin = ({
                 border: `1px solid ${currentTheme.borderColor}`,
                 marginTop: "16px",
               }}
-              headStyle={{
-                borderBottom: `1px solid ${currentTheme.borderColor}`,
-                color: currentTheme.textSecondary,
-                fontWeight: 600,
-              }}
+             
             >
               <Row gutter={[16, 16]}>
                 <Col span={24}>
@@ -563,18 +559,12 @@ const InfoAdmin = ({
                 borderRadius: "8px",
                 border: `1px solid ${currentTheme.borderColor}`,
               }}
-              headStyle={{
-                borderBottom: `1px solid ${currentTheme.borderColor}`,
-                color: currentTheme.textSecondary,
-                fontWeight: 600,
-              }}
+            
             >
               <Descriptions
                 bordered
                 column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
                 size="middle"
-                labelStyle={{ color: currentTheme.textTertiary }}
-                contentStyle={{ color: currentTheme.textColor }}
                 style={{
                   backgroundColor: currentTheme.bgContainer,
                 }}
@@ -666,11 +656,7 @@ const InfoAdmin = ({
                   border: `1px solid ${currentTheme.borderColor}`,
                   marginTop: "16px",
                 }}
-                headStyle={{
-                  borderBottom: `1px solid ${currentTheme.borderColor}`,
-                  color: currentTheme.textSecondary,
-                  fontWeight: 600,
-                }}
+              
               >
                 
                 {adminData.leave_history.map((leave: LeaveHistoryItem, index: number) => (
