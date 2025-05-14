@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { TeacherType } from '@/@types';
+import { TeacherType, GroupType } from '@/@types';
 import {
   Card,
   Avatar,
@@ -34,11 +34,13 @@ import { useTheme } from "next-themes";
 
 const { darkAlgorithm, defaultAlgorithm } = theme;
 
-export interface GroupType {
+export interface GroupDetailsType {
+  _id: string;
   name: string;
   students?: { length: number };
   started_group: string;
   end_group?: string;
+  is_deleted: boolean;
 }
 
 const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initialData?: TeacherType | null }) => {
@@ -59,7 +61,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
       if (response.data && response.data.data) {
         return response.data.data as TeacherType;
       }
-      throw new Error("Ma&apos;lumot topilmadi");
+      throw new Error("Ma'lumot topilmadi");
     },
     initialData: initialData || undefined, // Use SSR data if available
     staleTime: 5 * 60 * 1000, // Data is fresh for 5 minutes
@@ -72,9 +74,9 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
       switch (status?.toLowerCase()) {
         case "faol":
           return { color: "#52c41a", bg: "rgba(82, 196, 26, 0.2)" };
-        case "ta&apos;tilda":
+        case "ta'tilda":
           return { color: "#faad14", bg: "rgba(250, 173, 20, 0.2)" };
-        case "ishdan bo&apos;shatilgan":
+        case "ishdan bo'shatilgan":
           return { color: "#ff4d4f", bg: "rgba(255, 77, 79, 0.2)" };
         default:
           return { color: "#ff4d4f", bg: "rgba(255, 77, 79, 0.2)" };
@@ -83,9 +85,9 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
       switch (status?.toLowerCase()) {
         case "faol":
           return { color: "#389e0d", bg: "rgba(82, 196, 26, 0.1)" };
-        case "ta&apos;tilda":
+        case "ta'tilda":
           return { color: "#d48806", bg: "rgba(250, 173, 20, 0.1)" };
-        case "ishdan bo&apos;shatilgan":
+        case "ishdan bo'shatilgan":
           return { color: "#cf1322", bg: "rgba(255, 77, 79, 0.1)" };
         default:
           return { color: "#cf1322", bg: "rgba(255, 77, 79, 0.1)" };
@@ -151,7 +153,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
         height: '100vh',
         flexDirection: 'column',
         color: isDarkMode ? '#ff4d4f' : '#cf1322'
-      }}> <h2>Xatolik</h2> <p>{(error as Error).message || "Ma&apos;lumotni yuklashda xatolik yuz berdi"}</p> </div>
+      }}> <h2>Xatolik</h2> <p>{(error as Error).message || "Ma'lumotni yuklashda xatolik yuz berdi"}</p> </div>
     );
   }
 
@@ -164,7 +166,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
         height: '100vh',
         flexDirection: 'column',
         color: isDarkMode ? '#ff4d4f' : '#cf1322'
-      }}> <h2>Ma&apos;lumot topilmadi</h2> </div>
+      }}> <h2>Ma'lumot topilmadi</h2> </div>
     );
   }
 
@@ -318,7 +320,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
                     marginBottom: '8px'
                   }}> <TeamOutlined /> </div>
                   <div style={{ color: currentTheme.textSecondary }}>
-                    O&apos;qituvchi </div> </div> </div> </div> </Card>
+                    O'qituvchi </div> </div> </div> </div> </Card>
           <Card
             title="Ish tajribasi"
             style={{
@@ -374,7 +376,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
         </Col>
         <Col xs={24} md={16}>
           <Card
-            title="O&apos;qituvchi ma&apos;lumotlari"
+            title="O'qituvchi ma'lumotlari"
             style={{
               backgroundColor: currentTheme.bgContainer,
               boxShadow: currentTheme.cardShadow,
@@ -418,7 +420,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
                   {teacherData.status.toUpperCase()}
                 </span>
               </Descriptions.Item>
-              <Descriptions.Item label="Ta&apos;lim yo&apos;nalishi">
+              <Descriptions.Item label="Ta'lim yo'nalishi">
                 <span
                   style={{
                     display: 'inline-block',
@@ -446,7 +448,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
                     boxShadow: `0 0 8px ${activeStatus.color}20`,
                   }}
                 >
-                  {!teacherData.is_deleted ? "HA" : "YO&apos;Q"}
+                  {!teacherData.is_deleted ? "HA" : "YO'Q"}
                 </span>
               </Descriptions.Item>
               <Descriptions.Item label="Ishga kirgan sana">
@@ -457,7 +459,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
                   {moment(teacherData.work_end).format('DD.MM.YYYY')}
                 </Descriptions.Item>
               )}
-              <Descriptions.Item label="Ro&apos;yxatdan o&apos;tgan sana">
+              <Descriptions.Item label="Ro'yxatdan o'tgan sana">
                 {moment(teacherData.createdAt).format('DD.MM.YYYY')}
               </Descriptions.Item>
               <Descriptions.Item label="Oxirgi yangilanish">
@@ -488,7 +490,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
               }}
             >
               <Row gutter={[16, 16]}>
-                {teacherData.groups.map((group: any, index: number) => (
+                {(teacherData.groups as unknown as GroupDetailsType[]).map((group: GroupDetailsType, index: number) => (
                   <Col xs={24} sm={12} lg={8} key={index}>
                     <Card
                       size="small"
@@ -516,7 +518,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
                         />
                       }
                     >
-                      <div style={{ color: currentTheme.textTertiary }}>O&apos;quvchilar soni:</div>
+                      <div style={{ color: currentTheme.textTertiary }}>O'quvchilar soni:</div>
                       <div style={{ 
                         color: currentTheme.textColor, 
                         fontSize: '18px', 
@@ -553,13 +555,5 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
   </ConfigProvider>
   );
 };
-
-export interface Gruhlartype{
-  name: string,
-  is_deleted:boolean,
-  students:string[],
-  started_group:string,
-  end_group:string
-}
 
 export default TeacherInfoComponents;
