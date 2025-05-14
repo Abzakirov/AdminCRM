@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { TeacherType, GroupType } from '@/@types';
+import { TeacherType,  } from '@/@types';
 import {
   Card,
   Avatar,
@@ -166,7 +166,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
         height: '100vh',
         flexDirection: 'column',
         color: isDarkMode ? '#ff4d4f' : '#cf1322'
-      }}> <h2>Ma'lumot topilmadi</h2> </div>
+      }}> <h2>Ma&apos;lumot topilmadi</h2> </div>
     );
   }
 
@@ -320,7 +320,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
                     marginBottom: '8px'
                   }}> <TeamOutlined /> </div>
                   <div style={{ color: currentTheme.textSecondary }}>
-                    O'qituvchi </div> </div> </div> </div> </Card>
+                    O&apos;qituvchi </div> </div> </div> </div> </Card>
           <Card
             title="Ish tajribasi"
             style={{
@@ -518,7 +518,7 @@ const TeacherInfoComponents = ({ id, initialData = null }: { id: string, initial
                         />
                       }
                     >
-                      <div style={{ color: currentTheme.textTertiary }}>O'quvchilar soni:</div>
+                      <div style={{ color: currentTheme.textTertiary }}>O&apos;quvchilar soni:</div>
                       <div style={{ 
                         color: currentTheme.textColor, 
                         fontSize: '18px', 
