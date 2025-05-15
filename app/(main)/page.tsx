@@ -1,10 +1,10 @@
 import React from 'react'
-import PaymentStatsComponent from '../dashboard/Dashboard'
+import PaymentAndStatistics from '../../components/dashboard/Dashboard'
 
 const Home = () => {
   return (
     <div>
-      <PaymentStatsComponent/>
+      <PaymentAndStatistics/>
     </div>
   )
 }
