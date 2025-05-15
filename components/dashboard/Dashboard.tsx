@@ -21,8 +21,6 @@ import {
   Calendar,
   TrendingUp,
   DollarSign,
-  Moon,
-  Sun,
   Download,
   Filter,
   Search,
@@ -53,7 +51,7 @@ const PaymentAndStatistics: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"payment" | "statistics">(
     "payment"
   );
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
 
