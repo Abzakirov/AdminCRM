@@ -33,7 +33,7 @@ interface PaymentData {
   id: string;
   amount: number;
   date: string;
-  status: "to'langan" | "kutilmoqda" | "bekor qilingan";
+  status: "to&apos;langan" | "kutilmoqda" | "bekor qilingan";
   method: string;
 }
 
@@ -63,14 +63,14 @@ const PaymentAndStatistics: React.FC = () => {
       id: "1",
       amount: 1500000,
       date: "2025-05-10",
-      status: "to'langan",
+      status: "to&apos;langan",
       method: "Uzcard",
     },
     {
       id: "2",
       amount: 750000,
       date: "2025-05-08",
-      status: "to'langan",
+      status: "to&apos;langan",
       method: "Humo",
     },
     {
@@ -91,7 +91,7 @@ const PaymentAndStatistics: React.FC = () => {
       id: "5",
       amount: 3500000,
       date: "2025-04-28",
-      status: "to'langan",
+      status: "to&apos;langan",
       method: "Click",
     },
   ];
@@ -144,7 +144,7 @@ const PaymentAndStatistics: React.FC = () => {
   // Получение класса для статуса платежа
   const getStatusClass = (status: string): string => {
     switch (status) {
-      case "to'langan":
+      case "to&apos;langan":
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
       case "kutilmoqda":
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
@@ -160,7 +160,7 @@ const PaymentAndStatistics: React.FC = () => {
       {/* Шапка */}
       <div className="bg-white dark:bg-gray-800 shadow-md p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">O'quv markazi</h1>
+          <h1 className="text-2xl font-bold">O&apos;quv markazi</h1>
         </div>
       </div>
 
@@ -179,7 +179,7 @@ const PaymentAndStatistics: React.FC = () => {
             >
               <div className="flex items-center justify-center space-x-2">
                 <CreditCard size={18} />
-                <span>To'lovlar</span>
+                <span>To&apos;lovlar</span>
               </div>
             </button>
             <button
@@ -201,7 +201,7 @@ const PaymentAndStatistics: React.FC = () => {
           {activeTab === "payment" && (
             <div className="p-6">
               <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-4 md:space-y-0">
-                <h2 className="text-xl font-semibold">To'lovlar ro'yxati</h2>
+                <h2 className="text-xl font-semibold">To&apos;lovlar ro&apos;yxati</h2>
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
                   <div className="relative">
                     <input
@@ -223,7 +223,7 @@ const PaymentAndStatistics: React.FC = () => {
                       onChange={(e) => setFilterStatus(e.target.value || null)}
                     >
                       <option value="">Barcha statuslar</option>
-                      <option value="to'langan">To'langan</option>
+                      <option value="to&apos;langan">To&apos;langan</option>
                       <option value="kutilmoqda">Kutilmoqda</option>
                       <option value="bekor qilingan">Bekor qilingan</option>
                     </select>
@@ -240,7 +240,7 @@ const PaymentAndStatistics: React.FC = () => {
                 <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Jami to'lovlar
+                      Jami to&apos;lovlar
                     </p>
                     <p className="text-xl font-bold mt-1">
                       {formatCurrency(8950000)}
@@ -253,7 +253,7 @@ const PaymentAndStatistics: React.FC = () => {
                 <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      To'langan
+                      To&apos;langan
                     </p>
                     <p className="text-xl font-bold mt-1">
                       {formatCurrency(5750000)}
@@ -287,7 +287,7 @@ const PaymentAndStatistics: React.FC = () => {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                       >
-                        To'lov ID
+                        To&apos;lov ID
                       </th>
                       <th
                         scope="col"
@@ -305,7 +305,7 @@ const PaymentAndStatistics: React.FC = () => {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                       >
-                        To'lov usuli
+                        To&apos;lov usuli
                       </th>
                       <th
                         scope="col"
@@ -348,7 +348,7 @@ const PaymentAndStatistics: React.FC = () => {
                 </table>
                 {filteredPayments.length === 0 && (
                   <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                    To'lovlar topilmadi
+                    To&apos;lovlar topilmadi
                   </div>
                 )}
               </div>
@@ -367,7 +367,7 @@ const PaymentAndStatistics: React.FC = () => {
             <div className="p-6">
               <div className="mb-8">
                 <h2 className="text-xl font-semibold mb-6">
-                  Moliyaviy ko'rsatkichlar
+                  Moliyaviy ko&apos;rsatkichlar
                 </h2>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -427,7 +427,7 @@ const PaymentAndStatistics: React.FC = () => {
                   {/* Круговая диаграмма по методам оплаты */}
                   <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-medium mb-4">
-                      To'lov usullari
+                      To&apos;lov usullari
                     </h3>
                     <div className="h-80 flex items-center justify-center">
                       <ResponsiveContainer width="100%" height="100%">
@@ -478,7 +478,7 @@ const PaymentAndStatistics: React.FC = () => {
                   <div className="flex items-center mt-2 text-green-600 dark:text-green-400">
                     <TrendingUp size={14} />
                     <span className="ml-1 text-sm">
-                      +12.5% o'tgan yilga nisbatan
+                      +12.5% o&apos;tgan yilga nisbatan
                     </span>
                   </div>
                 </div>
@@ -492,13 +492,13 @@ const PaymentAndStatistics: React.FC = () => {
                   <div className="flex items-center mt-2 text-red-600 dark:text-red-400">
                     <TrendingUp size={14} />
                     <span className="ml-1 text-sm">
-                      +8.3% o'tgan yilga nisbatan
+                      +8.3% o&apos;tgan yilga nisbatan
                     </span>
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    O'rtacha to'lov summasi
+                    O&apos;rtacha to&apos;lov summasi
                   </p>
                   <p className="text-2xl font-bold mt-2">
                     {formatCurrency(1790000)}
@@ -506,19 +506,19 @@ const PaymentAndStatistics: React.FC = () => {
                   <div className="flex items-center mt-2 text-green-600 dark:text-green-400">
                     <TrendingUp size={14} />
                     <span className="ml-1 text-sm">
-                      +5.2% o'tgan oyga nisbatan
+                      +5.2% o&apos;tgan oyga nisbatan
                     </span>
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    To'lovlar soni
+                    To&apos;lovlar soni
                   </p>
                   <p className="text-2xl font-bold mt-2">248</p>
                   <div className="flex items-center mt-2 text-yellow-600 dark:text-yellow-400">
                     <TrendingUp size={14} />
                     <span className="ml-1 text-sm">
-                      +2.1% o'tgan oyga nisbatan
+                      +2.1% o&apos;tgan oyga nisbatan
                     </span>
                   </div>
                 </div>
