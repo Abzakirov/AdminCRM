@@ -9,8 +9,8 @@ const BottomSidabar = () => {
   const router = useRouter();
 
   return (
-    <div className="mt-5">
-      <div className="flex gap-2 mt-4 w-full">
+    <div >
+      <div className="flex gap-2  w-full">
         {ButtomsidebarMenu.map(({ Icons, id, path }) => {
           const isActive = pathname === path;
 
@@ -33,7 +33,7 @@ const BottomSidabar = () => {
         })}
         <button
           onClick={() => router.push("/menu")}
-          className="w-[40px] h-[40px] flex items-center justify-center border border-transparent hover:border-gray-300 dark:text-white"
+          className="w-[40px] h-[40px] mt-[-3px] flex items-center justify-center border border-transparent hover:border-gray-300 dark:text-white"
         >
           <Menu size={24} />
         </button>

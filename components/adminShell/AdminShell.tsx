@@ -23,7 +23,7 @@ const AdminShell = ({ children }: { children: React.ReactNode }) => {
         <div className="flex-grow">{children}</div>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 max-[700px]:block hidden p-2  dark:bg-[#111827] w-[100%]">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 max-[700px]:block hidden bg-[#f2f2f2] p-2 !h-[50px]   dark:bg-[#111827] w-[100%]">
         <BottomSidabar />
       </div>
     </main>
