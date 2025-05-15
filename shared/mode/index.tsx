@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "antd";
+import '@ant-design/v5-patch-for-react-19';
 
 export function DarkMode() {
   const { theme, setTheme } = useTheme();
