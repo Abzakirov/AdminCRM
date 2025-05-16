@@ -351,12 +351,7 @@ const PaymentAndStatistics: React.FC = () => {
                 )}
               </div>
 
-              <div className="mt-6 flex justify-end">
-                <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                  <Download size={16} />
-                  <span>Hisobotni yuklab olish</span>
-                </button>
-              </div>
+             
             </div>
           )}
 
@@ -522,12 +517,7 @@ const PaymentAndStatistics: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end">
-                <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                  <Download size={16} />
-                  <span>Statistikani yuklab olish</span>
-                </button>
-              </div>
+          
             </div>
           )}
         </div>
