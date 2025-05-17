@@ -17,7 +17,8 @@ import type {
   EditPriceGroupType,
   EditProfileImageType,
   GroupsType,
-  searchGroupType,
+  ManagerEditType,
+  ManagerType,
   StudentVacationType,
   UserType,
   VacationType,
@@ -755,6 +756,52 @@ export const usePaymentAddMutation = () => {
       showErrorToast(
         error?.response?.data?.message || "To'lovni qilishda xatolik!"
       );
+    },
+  });
+};
+
+
+
+export const useManagerCreateMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["create-manager"],
+    mutationFn: async (data: object) => {
+      const response = await axiosInstance.post("/staff/create-manager", data);
+      return response.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["managers"] });
+      showSuccessToast("Manager muvaffaqiyatli yaratildi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(
+        error?.response?.data?.message || "Manager yaratishda xatolik!"
+      );
+    },
+  });
+};
+
+export const useEditManagerMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["edit-admin"],
+    mutationFn: async (data: ManagerEditType) => {
+      const response = await axiosInstance.post("/staff/edited-manager", data);
+      return response.data.data;
+    },
+    onSuccess: (data: ManagerType) => {
+      queryClient.setQueryData<ManagerType[]>(["managers"], (old) =>
+        old?.map((manager) =>
+          manager._id === data._id ? { ...manager, ...data } : manager
+        )
+      );
+      showSuccessToast("Manager muvaffaqiyatli tahrirlandi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.message || "Xatolik yuz berdi!");
     },
   });
 };

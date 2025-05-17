@@ -1,21 +1,17 @@
 "use client";
 
-import { ManagerType } from "@/@types";
+import {  ManagerType } from "@/@types";
 import { axiosInstance } from "@/hooks/useAxios/useAxios";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Table,
-  Avatar,
-  ConfigProvider,
-  theme,
-} from "antd";
+import { Table, Avatar, ConfigProvider, theme, Dropdown, Button } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
+import { MoreOutlined } from "@ant-design/icons";
 import Cookies from "js-cookie";
-
+import EditManager from "../EditManager/EditManager";
 
 const ManagerTable = () => {
-  const { data, isLoading,  } = useQuery<ManagerType[]>({
+  const { data, isLoading } = useQuery<ManagerType[]>({
     queryKey: ["managers"],
     queryFn: async () => {
       const res = await axiosInstance.get("/staff/all-managers");
@@ -23,8 +19,10 @@ const ManagerTable = () => {
     },
   });
 
+
   const [managers, setManagers] = useState<ManagerType[]>([]);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<ManagerType | null>(null);
 
   useEffect(() => {
     if (data) {
@@ -61,14 +59,27 @@ const ManagerTable = () => {
   const getRoleColor = (role: string) => {
     switch (role.toLowerCase()) {
       case "admin":
-        return { color: "#722ed1",bg: "rgba(114, 46, 209, 0.2)" };
+        return { color: "#722ed1", bg: "rgba(114, 46, 209, 0.2)" };
       case "manager":
-        return { color: "#1890ff",   bg: "rgba(24, 144, 255, 0.2)" };
+        return { color: "#1890ff", bg: "rgba(24, 144, 255, 0.2)" };
       default:
         return { color: "#13c2c2", bg: "rgba(19, 194, 194, 0.2)" };
     }
   };
 
+  const handleClose = () => {
+    setSelectedUser(null);
+  };
+
+  const handleMenuClick = (record: ManagerType, action: string) => {
+    switch (action) {
+      case "edit":
+        setSelectedUser(record);
+        break;
+      default:
+        break;
+    }
+  };
   const columns: ColumnsType<ManagerType> = [
     {
       title: "Avatar",
@@ -175,6 +186,30 @@ const ManagerTable = () => {
         );
       },
     },
+    ...(userRole === "manager"
+      ? [
+          {
+            title: "Amallar",
+            key: "actions",
+            render: (_: any, record: ManagerType) => {
+              const items = [
+                { label: "Tahrirlash", key: "edit" },
+              ];
+              return (
+                <Dropdown
+                  menu={{
+                    items,
+                    onClick: ({ key }) => handleMenuClick(record, key),
+                  }}
+                  trigger={["click"]}
+                >
+                  <Button type="text" icon={<MoreOutlined rotate={90} />} />
+                </Dropdown>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   const customTableStyles = {
@@ -236,6 +271,7 @@ const ManagerTable = () => {
             rowClassName={rowClassName}
             scroll={{ x: "max-content" }}
           />
+          <EditManager user={selectedUser} onClose={handleClose} />
         </div>
       </div>
     </ConfigProvider>

@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { Drawer, Button, Spin, ConfigProvider, theme } from "antd";
-import { AdminUserType } from "@/@types";
-import { useEditAdminMutation } from "@/hooks/mutation";
+import { useEditManagerMutation } from "@/hooks/mutation";
 import { useTheme } from "next-themes";
+import { ManagerType } from "@/@types";
 
-interface RightSidebarProps {
-  user?: AdminUserType | null;
+interface EditManagerProps {
+  user?: ManagerType | null;
   onClose: () => void;
 }
 
-const RightSidebar: React.FC<RightSidebarProps> = ({ user, onClose }) => {
+const EditManager: React.FC<EditManagerProps> = ({ user, onClose }) => {
   const { resolvedTheme } = useTheme(); // Используем resolvedTheme вместо theme
-  const { mutate, isPending } = useEditAdminMutation();
+  const { mutate, isPending } = useEditManagerMutation();
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -164,4 +164,4 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ user, onClose }) => {
   );
 };
 
-export default RightSidebar;
+export default EditManager;

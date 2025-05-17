@@ -295,3 +295,12 @@ export interface addStudentGroupType{
   group_id: string,
   joinedAt: string
 }
+
+
+export interface ManagerEditType{
+  _id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  status: string;
+}
