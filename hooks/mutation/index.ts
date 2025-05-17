@@ -381,7 +381,7 @@ export const useStudentCreateMutation = () => {
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] }); 
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       showSuccessToast("O'quvchi muvaffaqiyatli yaratildi!");
     },
     onError: (error: any) => {
@@ -651,8 +651,10 @@ export const useDeleteCourseMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["delete-course"],
-    mutationFn: async (data: {course_id:string}) => {
-      const response = await axiosInstance.delete("/course/delete-course", { data });
+    mutationFn: async (data: { course_id: string }) => {
+      const response = await axiosInstance.delete("/course/delete-course", {
+        data,
+      });
       return response.data;
     },
     onSuccess: () => {
@@ -673,11 +675,11 @@ export const useFreezeCourseMutation = () => {
     mutationKey: ["freeze-course"],
     mutationFn: async (course_id: string) => {
       const response = await axiosInstance.put("/course/freeze-course", {
-        course_id
+        course_id,
       });
       return response.data;
     },
-    
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
       showSuccessToast("Kurs muvaffaqiyatli toxtatildi!");
@@ -695,7 +697,7 @@ export const useUnFreezeCourseMutation = () => {
     mutationKey: ["Unfreeze-course"],
     mutationFn: async (course_id: string) => {
       const response = await axiosInstance.put("/course/unfreeze-course", {
-          course_id   
+        course_id,
       });
       return response.data;
     },
@@ -711,13 +713,15 @@ export const useUnFreezeCourseMutation = () => {
   });
 };
 
-
 export const useAddStudentGroupMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["add-student-group"],
     mutationFn: async (data: addStudentGroupType) => {
-      const response = await axiosInstance.post("/student/added-new-group-student", data);
+      const response = await axiosInstance.post(
+        "/student/added-new-group-student",
+        data
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -727,6 +731,29 @@ export const useAddStudentGroupMutation = () => {
     onError: (error: any) => {
       showErrorToast(
         error?.response?.data?.message || "O'quvchini qo'shishda xatolik!"
+      );
+    },
+  });
+};
+
+export const usePaymentAddMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["payment-add"],
+    mutationFn: async (data: object) => {
+      const response = await axiosInstance.post(
+        "/payment/payment-student",
+        data
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      showSuccessToast("To'lov muvaffaqiyatli qilindi!");
+    },
+    onError: (error: any) => {
+      showErrorToast(
+        error?.response?.data?.message || "To'lovni qilishda xatolik!"
       );
     },
   });

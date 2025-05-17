@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import {
   PieChart,
@@ -21,18 +21,24 @@ import {
   Calendar,
   TrendingUp,
   DollarSign,
-  Download,
   Filter,
   Search,
+  Banknote,
 } from "lucide-react";
+import { Button, Modal, Input, Select, DatePicker, Form, message } from "antd";
+import dayjs from "dayjs";
+import { axiosInstance } from "@/hooks/useAxios/useAxios";
+import { useQuery } from "@tanstack/react-query";
+import { usePaymentAddMutation } from "@/hooks/mutation";
+import { StudentUserType } from "@/@types";
 
 // Типы для данных
 interface PaymentData {
   id: string;
   amount: number;
   date: string;
-  status: "to&apos;langan" | "kutilmoqda" | "bekor qilingan";
-  method: string;
+  status: "to'langan" | "kutilmoqda" | "bekor qilingan";
+  method: "naqd" | "karta";
 }
 
 interface StatisticsData {
@@ -47,6 +53,15 @@ interface PieData {
   color: string;
 }
 
+interface PaymentFormData {
+  student_id: string;
+  group_id: string;
+  payment_price: string;
+  month: string;
+  method: "naqd" | "karta";
+  paidAt: string;
+}
+
 const PaymentAndStatistics: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"payment" | "statistics">(
     "payment"
@@ -54,6 +69,63 @@ const PaymentAndStatistics: React.FC = () => {
   const { theme } = useTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
+  const { mutate: addPayment } = usePaymentAddMutation();
+
+  // Хук для дебаунса поисковых запросов
+  const useDebounce = (value: string, delay: number) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+      const handler = setTimeout(() => setDebouncedValue(value), delay);
+      return () => clearTimeout(handler);
+    }, [value, delay]);
+    return debouncedValue;
+  };
+    const {
+      data: studentsData,
+      isLoading,
+      refetch,
+    } = useQuery<StudentUserType[]>({
+      queryKey: ["students"],
+      queryFn: async () => {
+        const res = await axiosInstance.get("/student/get-all-students");
+        return res.data.data;
+      },
+    });
+
+  // Поиск студентов
+  const [studentsSearchTerm, setStudentsSearchTerm] = useState("");
+  const debouncedStudentsSearchTerm = useDebounce(studentsSearchTerm, 500);
+
+  const { data: students = [], isLoading: isStudentsLoading } = useQuery({
+    queryKey: ["search-students", debouncedStudentsSearchTerm],
+    queryFn: async () => {
+      if (!debouncedStudentsSearchTerm) return [];
+      const res = await axiosInstance.get("/payment/search-student", {
+        params: { name: debouncedStudentsSearchTerm },
+      });
+      return res.data.data || [];
+    },
+    enabled: !!debouncedStudentsSearchTerm,
+  });
+
+  // Поиск групп
+  const [groupSearchTerm, setGroupSearchTerm] = useState("");
+  const debouncedGroupSearchTerm = useDebounce(groupSearchTerm, 500);
+
+  const { data: groups = [], isLoading: isGroupsLoading } = useQuery({
+    queryKey: ["search-groups", debouncedGroupSearchTerm],
+    queryFn: async () => {
+      if (!debouncedGroupSearchTerm) return [];
+      const res = await axiosInstance.get("/student/search-group", {
+        params: { name: debouncedGroupSearchTerm },
+      });
+      return res.data.data || [];
+    },
+    enabled: !!debouncedGroupSearchTerm,
+  });
+  
 
   // Демо-данные для оплат
   const payments: PaymentData[] = [
@@ -61,36 +133,36 @@ const PaymentAndStatistics: React.FC = () => {
       id: "1",
       amount: 1500000,
       date: "2025-05-10",
-      status: "to&apos;langan",
-      method: "Uzcard",
+      status: "to'langan",
+      method: "karta",
     },
     {
       id: "2",
       amount: 750000,
       date: "2025-05-08",
-      status: "to&apos;langan",
-      method: "Humo",
+      status: "to'langan",
+      method: "karta",
     },
     {
       id: "3",
       amount: 2000000,
       date: "2025-05-15",
       status: "kutilmoqda",
-      method: "Naqd pul",
+      method: "naqd",
     },
     {
       id: "4",
       amount: 1200000,
       date: "2025-05-01",
       status: "bekor qilingan",
-      method: "Payme",
+      method: "karta",
     },
     {
       id: "5",
       amount: 3500000,
       date: "2025-04-28",
-      status: "to&apos;langan",
-      method: "Click",
+      status: "to'langan",
+      method: "naqd",
     },
   ];
 
@@ -105,11 +177,42 @@ const PaymentAndStatistics: React.FC = () => {
 
   // Данные для круговой диаграммы
   const pieData: PieData[] = [
-    { name: "Uzcard", value: 45, color: "#0088FE" },
-    { name: "Humo", value: 30, color: "#00C49F" },
-    { name: "Naqd pul", value: 15, color: "#FFBB28" },
-    { name: "Click/Payme", value: 10, color: "#FF8042" },
+    { name: "Karta", value: 75, color: "#0088FE" },
+    { name: "Naqd", value: 25, color: "#00C49F" },
   ];
+
+  // Обработчики модального окна
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        const formattedValues = {
+          ...values,
+          month: values.month.format("YYYY-MM"),
+          paidAt: values.paidAt.format("YYYY-MM-DD"),
+        };
+
+        // Используем mutation для отправки данных на сервер
+        addPayment(formattedValues, {
+          onSuccess: () => {
+            setIsModalOpen(false);
+            form.resetFields();
+          },
+        });
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
 
   // Фильтрация платежей
   const filteredPayments = payments.filter((payment) => {
@@ -142,7 +245,7 @@ const PaymentAndStatistics: React.FC = () => {
   // Получение класса для статуса платежа
   const getStatusClass = (status: string): string => {
     switch (status) {
-      case "to&apos;langan":
+      case "to'langan":
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
       case "kutilmoqda":
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
@@ -153,12 +256,45 @@ const PaymentAndStatistics: React.FC = () => {
     }
   };
 
+  // Получение иконки для метода оплаты
+  const getPaymentMethodIcon = (method: string) => {
+    switch (method) {
+      case "naqd":
+        return <Banknote className="w-4 h-4 mr-1" />;
+      case "karta":
+        return <CreditCard className="w-4 h-4 mr-1" />;
+      default:
+        return null;
+    }
+  };
+
+  // Получение класса для метода оплаты
+  const getPaymentMethodClass = (method: string): string => {
+    switch (method) {
+      case "naqd":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "karta":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
+    }
+  };
+
+  // Обработчики ввода для автокомплита
+  const handleStudentSearch = (value: string) => {
+    setStudentsSearchTerm(value);
+  };
+
+  const handleGroupSearch = (value: string) => {
+    setGroupSearchTerm(value);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
       {/* Шапка */}
       <div className="bg-white dark:bg-gray-800 shadow-md p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">O&apos;quv markazi</h1>
+          <h1 className="text-2xl font-bold">O'quv markazi</h1>
         </div>
       </div>
 
@@ -177,7 +313,7 @@ const PaymentAndStatistics: React.FC = () => {
             >
               <div className="flex items-center justify-center space-x-2">
                 <CreditCard size={18} />
-                <span>To&apos;lovlar</span>
+                <span>To'lovlar</span>
               </div>
             </button>
             <button
@@ -199,7 +335,7 @@ const PaymentAndStatistics: React.FC = () => {
           {activeTab === "payment" && (
             <div className="p-6">
               <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-4 md:space-y-0">
-                <h2 className="text-xl font-semibold">To&apos;lovlar ro&apos;yxati</h2>
+                <h2 className="text-xl font-semibold">To'lovlar ro'yxati</h2>
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
                   <div className="relative">
                     <input
@@ -221,7 +357,7 @@ const PaymentAndStatistics: React.FC = () => {
                       onChange={(e) => setFilterStatus(e.target.value || null)}
                     >
                       <option value="">Barcha statuslar</option>
-                      <option value="to&apos;langan">To&apos;langan</option>
+                      <option value="to'langan">To'langan</option>
                       <option value="kutilmoqda">Kutilmoqda</option>
                       <option value="bekor qilingan">Bekor qilingan</option>
                     </select>
@@ -230,6 +366,13 @@ const PaymentAndStatistics: React.FC = () => {
                       size={16}
                     />
                   </div>
+                  <Button
+                    type="primary"
+                    className="!w-[100px] !h-[40px]"
+                    onClick={showModal}
+                  >
+                    Tolov qilish
+                  </Button>
                 </div>
               </div>
 
@@ -238,7 +381,7 @@ const PaymentAndStatistics: React.FC = () => {
                 <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Jami to&apos;lovlar
+                      Jami to'lovlar
                     </p>
                     <p className="text-xl font-bold mt-1">
                       {formatCurrency(8950000)}
@@ -251,7 +394,7 @@ const PaymentAndStatistics: React.FC = () => {
                 <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      To&apos;langan
+                      To'langan
                     </p>
                     <p className="text-xl font-bold mt-1">
                       {formatCurrency(5750000)}
@@ -285,7 +428,7 @@ const PaymentAndStatistics: React.FC = () => {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                       >
-                        To&apos;lov ID
+                        To'lov ID
                       </th>
                       <th
                         scope="col"
@@ -303,7 +446,7 @@ const PaymentAndStatistics: React.FC = () => {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                       >
-                        To&apos;lov usuli
+                        To'lov usuli
                       </th>
                       <th
                         scope="col"
@@ -329,7 +472,14 @@ const PaymentAndStatistics: React.FC = () => {
                           {formatDate(payment.date)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {payment.method}
+                          <span
+                            className={`inline-flex items-center px-3 py-1 text-xs rounded-full ${getPaymentMethodClass(
+                              payment.method
+                            )}`}
+                          >
+                            {getPaymentMethodIcon(payment.method)}
+                            {payment.method === "naqd" ? "Naqd pul" : "Karta"}
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
@@ -346,12 +496,10 @@ const PaymentAndStatistics: React.FC = () => {
                 </table>
                 {filteredPayments.length === 0 && (
                   <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                    To&apos;lovlar topilmadi
+                    To'lovlar topilmadi
                   </div>
                 )}
               </div>
-
-             
             </div>
           )}
 
@@ -360,7 +508,7 @@ const PaymentAndStatistics: React.FC = () => {
             <div className="p-6">
               <div className="mb-8">
                 <h2 className="text-xl font-semibold mb-6">
-                  Moliyaviy ko&apos;rsatkichlar
+                  Moliyaviy ko'rsatkichlar
                 </h2>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -377,7 +525,7 @@ const PaymentAndStatistics: React.FC = () => {
                         >
                           <CartesianGrid
                             strokeDasharray="3 3"
-                            stroke="#374151"
+                            stroke={theme === "dark" ? "#374151" : "#e5e7eb"}
                           />
                           <XAxis dataKey="month" />
                           <YAxis
@@ -390,7 +538,9 @@ const PaymentAndStatistics: React.FC = () => {
                           />
                           <Tooltip
                             formatter={(value) => formatCurrency(Number(value))}
-                            labelStyle={{ color: "#000" }}
+                            labelStyle={{
+                              color: theme === "dark" ? "#F9FAFB" : "#000",
+                            }}
                             contentStyle={{
                               backgroundColor:
                                 theme === "dark" ? "#374151" : "#fff",
@@ -420,7 +570,7 @@ const PaymentAndStatistics: React.FC = () => {
                   {/* Круговая диаграмма по методам оплаты */}
                   <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-medium mb-4">
-                      To&apos;lov usullari
+                      To'lov usullari
                     </h3>
                     <div className="h-80 flex items-center justify-center">
                       <ResponsiveContainer width="100%" height="100%">
@@ -458,7 +608,151 @@ const PaymentAndStatistics: React.FC = () => {
                   </div>
                 </div>
               </div>
+              {/* Modal for adding new payment */}
+              <Modal
+                title="Yangi to'lov"
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                okText="Saqlash"
+                cancelText="Bekor qilish"
+                className={theme === "dark" ? "dark-modal" : ""}
+                styles={{
+                  content: {
+                    background: theme === "dark" ? "#1f2937" : "#ffffff",
+                    color: theme === "dark" ? "#f9fafb" : "#111827",
+                  },
+                  header: {
+                    background: theme === "dark" ? "#1f2937" : "#ffffff",
+                    color: theme === "dark" ? "#f9fafb" : "#111827",
+                  },
+                  body: {
+                    background: theme === "dark" ? "#1f2937" : "#ffffff",
+                    color: theme === "dark" ? "#f9fafb" : "#111827",
+                  },
+                  footer: {
+                    background: theme === "dark" ? "#1f2937" : "#ffffff",
+                    color: theme === "dark" ? "#f9fafb" : "#111827",
+                  },
+                }}
+              >
+                <Form
+                  form={form}
+                  layout="vertical"
+                  initialValues={{
+                    method: "naqd",
+                  }}
+                >
+                  {/* Student selection */}
+                  <Form.Item
+                    name="student_id"
+                    label="O'quvchi"
+                    rules={[{ required: true, message: "O'quvchini tanlang!" }]}
+                  >
+                    <Select
+                      showSearch
+                      placeholder="O'quvchini qidiring"
+                      filterOption={false}
+                      onSearch={handleStudentSearch}
+                      loading={isStudentsLoading}
+                      notFoundContent={
+                        isStudentsLoading
+                          ? "Qidirilmoqda..."
+                          : "O'quvchi topilmadi"
+                      }
+                    >
+                      {students.map((student: studenttype) => (
+                        <Select.Option key={student._id} value={student._id}>
+                          {student.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
 
+                  {/* Group selection */}
+                  <Form.Item
+                    name="group_id"
+                    label="Guruh"
+                    rules={[{ required: true, message: "Guruhni tanlang!" }]}
+                  >
+                    <Select
+                      showSearch
+                      placeholder="Guruhni qidiring"
+                      filterOption={false}
+                      onSearch={handleGroupSearch}
+                      loading={isGroupsLoading}
+                      notFoundContent={
+                        isGroupsLoading ? "Qidirilmoqda..." : "Guruh topilmadi"
+                      }
+                    >
+                      {groups.map((group: GroupType) => (
+                        <Select.Option key={group._id} value={group._id}>
+                          {group.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+
+                  {/* Payment amount */}
+                  <Form.Item
+                    name="payment_price"
+                    label="To'lov summasi"
+                    rules={[
+                      { required: true, message: "To'lov summasini kiriting!" },
+                    ]}
+                  >
+                    <Input
+                      prefix={
+                        <DollarSign size={16} className="text-gray-400" />
+                      }
+                      placeholder="Summa"
+                      type="number"
+                    />
+                  </Form.Item>
+
+                  {/* Payment month */}
+                  <Form.Item
+                    name="month"
+                    label="To'lov oyi"
+                    rules={[
+                      { required: true, message: "To'lov oyini tanlang!" },
+                    ]}
+                  >
+                    <DatePicker
+                      picker="month"
+                      placeholder="Oyni tanlang"
+                      format="YYYY-MM"
+                      style={{ width: "100%" }}
+                    />
+                  </Form.Item>
+
+                  {/* Payment method */}
+                  <Form.Item
+                    name="method"
+                    label="To'lov usuli"
+                    rules={[
+                      { required: true, message: "To'lov usulini tanlang!" },
+                    ]}
+                  >
+                    <Select>
+                      <Select.Option value="naqd">Naqd pul</Select.Option>
+                      <Select.Option value="karta">Karta</Select.Option>
+                    </Select>
+                  </Form.Item>
+
+                  {/* Payment date */}
+                  <Form.Item
+                    name="paidAt"
+                    label="To'lov sanasi"
+                    rules={[
+                      { required: true, message: "To'lov sanasini kiriting!" },
+                    ]}
+                    initialValue={dayjs()}
+                  >
+                    <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
+                  </Form.Item>
+                </Form>
+              </Modal>
               {/* Карточки сводной статистики */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
@@ -471,7 +765,7 @@ const PaymentAndStatistics: React.FC = () => {
                   <div className="flex items-center mt-2 text-green-600 dark:text-green-400">
                     <TrendingUp size={14} />
                     <span className="ml-1 text-sm">
-                      +12.5% o&apos;tgan yilga nisbatan
+                      +12.5% o'tgan yilga nisbatan
                     </span>
                   </div>
                 </div>
@@ -485,13 +779,13 @@ const PaymentAndStatistics: React.FC = () => {
                   <div className="flex items-center mt-2 text-red-600 dark:text-red-400">
                     <TrendingUp size={14} />
                     <span className="ml-1 text-sm">
-                      +8.3% o&apos;tgan yilga nisbatan
+                      +8.3% o'tgan yilga nisbatan
                     </span>
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    O&apos;rtacha to&apos;lov summasi
+                    O'rtacha to'lov summasi
                   </p>
                   <p className="text-2xl font-bold mt-2">
                     {formatCurrency(1790000)}
@@ -499,31 +793,172 @@ const PaymentAndStatistics: React.FC = () => {
                   <div className="flex items-center mt-2 text-green-600 dark:text-green-400">
                     <TrendingUp size={14} />
                     <span className="ml-1 text-sm">
-                      +5.2% o&apos;tgan oyga nisbatan
+                      +5.2% o'tgan oyga nisbatan
                     </span>
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    To&apos;lovlar soni
+                    To'lovlar soni
                   </p>
                   <p className="text-2xl font-bold mt-2">248</p>
                   <div className="flex items-center mt-2 text-yellow-600 dark:text-yellow-400">
                     <TrendingUp size={14} />
                     <span className="ml-1 text-sm">
-                      +2.1% o&apos;tgan oyga nisbatan
+                      +2.1% o'tgan oyga nisbatan
                     </span>
                   </div>
                 </div>
               </div>
-
-          
             </div>
           )}
         </div>
       </div>
+      <Modal
+        title="Yangi to'lov"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Saqlash"
+        cancelText="Bekor qilish"
+        className={theme === "dark" ? "dark-modal" : ""}
+        styles={{
+          content: {
+            background: theme === "dark" ? "#1f2937" : "#ffffff",
+            color: theme === "dark" ? "#f9fafb" : "#111827",
+          },
+          header: {
+            background: theme === "dark" ? "#1f2937" : "#ffffff",
+            color: theme === "dark" ? "#f9fafb" : "#111827",
+          },
+          body: {
+            background: theme === "dark" ? "#1f2937" : "#ffffff",
+            color: theme === "dark" ? "#f9fafb" : "#111827",
+          },
+          footer: {
+            background: theme === "dark" ? "#1f2937" : "#ffffff",
+            color: theme === "dark" ? "#f9fafb" : "#111827",
+          },
+        }}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{
+            method: "naqd",
+          }}
+        >
+          {/* Student selection */}
+          <Form.Item
+            name="student_id"
+            label="O'quvchi"
+            rules={[{ required: true, message: "O'quvchini tanlang!" }]}
+          >
+            <Select
+              showSearch
+              placeholder="O'quvchini qidiring"
+              filterOption={false}
+              onSearch={handleStudentSearch}
+              loading={isStudentsLoading}
+              notFoundContent={
+                isStudentsLoading ? "Qidirilmoqda..." : "O'quvchi topilmadi"
+              }
+            >
+              {students.map((student: studenttype) => (
+                <Select.Option key={student._id} value={student._id}>
+                  {student.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          {/* Group selection */}
+          <Form.Item
+            name="group_id"
+            label="Guruh"
+            rules={[{ required: true, message: "Guruhni tanlang!" }]}
+          >
+            <Select
+              showSearch
+              placeholder="Guruhni qidiring"
+              filterOption={false}
+              onSearch={handleGroupSearch}
+              loading={isGroupsLoading}
+              notFoundContent={
+                isGroupsLoading ? "Qidirilmoqda..." : "Guruh topilmadi"
+              }
+            >
+              {groups.map((group: GroupType) => (
+                <Select.Option key={group._id} value={group._id}>
+                  {group.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          {/* Payment amount */}
+          <Form.Item
+            name="payment_price"
+            label="To'lov summasi"
+            rules={[{ required: true, message: "To'lov summasini kiriting!" }]}
+          >
+            <Input
+              prefix={<DollarSign size={16} className="text-gray-400" />}
+              placeholder="Summa"
+              type="number"
+            />
+          </Form.Item>
+
+          {/* Payment month */}
+          <Form.Item
+            name="month"
+            label="To'lov oyi"
+            rules={[{ required: true, message: "To'lov oyini tanlang!" }]}
+          >
+            <DatePicker
+              picker="month"
+              placeholder="Oyni tanlang"
+              format="YYYY-MM"
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+
+          {/* Payment method */}
+          <Form.Item
+            name="method"
+            label="To'lov usuli"
+            rules={[{ required: true, message: "To'lov usulini tanlang!" }]}
+          >
+            <Select>
+              <Select.Option value="naqd">Naqd pul</Select.Option>
+              <Select.Option value="karta">Karta</Select.Option>
+            </Select>
+          </Form.Item>
+
+          {/* Payment date */}
+          <Form.Item
+            name="paidAt"
+            label="To'lov sanasi"
+            rules={[{ required: true, message: "To'lov sanasini kiriting!" }]}
+            initialValue={dayjs()}
+          >
+            <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
 
 export default PaymentAndStatistics;
+
+interface GroupType {
+  _id: string;
+  group: string;
+  name: string;
+}
+
+interface studenttype {
+  _id: string;
+  name: string;
+}
