@@ -53,14 +53,6 @@ interface PieData {
   color: string;
 }
 
-interface PaymentFormData {
-  student_id: string;
-  group_id: string;
-  payment_price: string;
-  month: string;
-  method: "naqd" | "karta";
-  paidAt: string;
-}
 
 const PaymentAndStatistics: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"payment" | "statistics">(
